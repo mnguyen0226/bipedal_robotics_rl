@@ -21,6 +21,7 @@ def q_learning_main():
     env = gym.make("BipedalWalker-v2")
     q_table = defaultdict(lambda: np.zeros((10, 10, 10, 10)))
 
+    # plot
     plot = plt.figure()
     xval, yval = [], []
     subplot = plot.add_subplot()
@@ -32,7 +33,7 @@ def q_learning_main():
     subplot.set_ylim([-220, -80])
 
     for i in range(1, num_episodes + 1):
-
+        # collect rewards and highest reward
         curr_episode_reward, highest_reward = q_learning(
             env=env,
             num_episode=i,
@@ -43,6 +44,7 @@ def q_learning_main():
         )
         print(f"Episode {i} finished. Highest reward: {highest_reward}")
 
+        # append plot
         xval.append(i)
         yval.append(curr_episode_reward)
         plotLine.set_xdata(xval)
