@@ -32,7 +32,7 @@ def update_q_table(q_table, state, action, reward, alpha, gamma, next_state=None
 
     # Q(s,a) <- Q(s,a) + alpha[R + gamma*max_a(Q'(s,a) - Q(s,a))]
     new_q_val = curr_q_val + (alpha * (target_q_val - curr_q_val))
-    
+
     return new_q_val
 
 
@@ -92,7 +92,7 @@ def discretize_state(state):
             * 19
         )
         discrete_state.append(idx)
-    
+
     ds = tuple(discrete_state)
     return ds
 
@@ -130,32 +130,32 @@ def q_learning(env, num_episode, q_table, highest_reward, alpha, gamma, render=F
     Returns:
         total reward, highest reward
     """
-    if render: # set rendering state 
+    if render:  # set rendering state
         env.render()
-        
+
     # initialize state, reward, epsilon greedy rate
     state = discretize_state(env.reset()[0:14])
     total_reward = 0
     epsilon = 1.0 / num_episode * 0.004
 
     while True:
-        next_action = convert_next_action( # choose next action
+        next_action = convert_next_action(  # choose next action
             get_next_action(q_table=q_table, epsilon=epsilon, state=state)
         )
-        
-        discretized_next_action = get_next_action( # discretize the next action
+
+        discretized_next_action = get_next_action(  # discretize the next action
             q_table=q_table, epsilon=epsilon, state=state
         )
-        
+
         # agent take action and collect info
         next_state, reward, done, _ = env.step(next_action)
-        
+
         # discretize the next state
         next_state = discretize_state(next_state[0:14])
-        
-        # collect reward 
+
+        # collect reward
         total_reward += reward
-        
+
         # update q table
         q_table[state][discretized_next_action] = update_q_table(
             q_table=q_table,
@@ -166,15 +166,15 @@ def q_learning(env, num_episode, q_table, highest_reward, alpha, gamma, render=F
             gamma=gamma,
             next_state=next_state,
         )
-        
+
         # set current state to next state
         state = next_state
-        
+
         if done:
             break
-    
+
     # return the highest reward in the episode
     if total_reward > highest_reward:
         highest_reward = total_reward
-        
+
     return total_reward, highest_reward

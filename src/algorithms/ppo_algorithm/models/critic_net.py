@@ -4,6 +4,12 @@ import torch
 
 class Value(nn.Module):
     def __init__(self, state_dim, hidden_size=(128, 128)):
+        """Constructor of Value Critic network
+
+        Args:
+            state_dim: state dimension
+            hidden_size: hidden layers' sizes. Defaults to (128, 128).
+        """
         super().__init__()
         self.activation = torch.tanh
 
@@ -18,6 +24,14 @@ class Value(nn.Module):
         self.value_head.bias.data.mul_(0.0)
 
     def forward(self, x):
+        """Forward pass of Value Critic network
+
+        Args:
+            x: input
+
+        Returns:
+            Output value
+        """
         for affine in self.affine_layers:
             x = self.activation(affine(x))
 

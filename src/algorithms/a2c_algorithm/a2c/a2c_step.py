@@ -32,15 +32,17 @@ def a2c_step(
     # weight decays with L2 Regularization
     for param in value_net.parameters():
         value_loss += param.pow(2).sum() * l2_reg
-        
-    optimizer_value.zero_grad() # initialize gradients to 0s
-    value_loss.backward() # back propagation     
-    optimizer_value.step() # update gradients
+
+    optimizer_value.zero_grad()  # initialize gradients to 0s
+    value_loss.backward()  # back propagation
+    optimizer_value.step()  # update gradients
 
     # update Policy network
-    log_probs = policy_net.get_log_prob(states, actions) # get log probabilities
-    policy_loss = -(log_probs * advantages).mean() # intilize loss value
-    optimizer_policy.zero_grad() # initialize gradients to 0s
-    policy_loss.backward() # back propagation
-    torch.nn.utils.clip_grad_norm_(policy_net.parameters(), 40) # clip the gradient to avoid overfit of under fit
-    optimizer_policy.step()# update gradients
+    log_probs = policy_net.get_log_prob(states, actions)  # get log probabilities
+    policy_loss = -(log_probs * advantages).mean()  # intilize loss value
+    optimizer_policy.zero_grad()  # initialize gradients to 0s
+    policy_loss.backward()  # back propagation
+    torch.nn.utils.clip_grad_norm_(
+        policy_net.parameters(), 40
+    )  # clip the gradient to avoid overfit of under fit
+    optimizer_policy.step()  # update gradients

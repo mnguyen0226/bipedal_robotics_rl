@@ -51,12 +51,14 @@ class BipedalWalkerAgent:
         Returns:
             Batch of action and log
         """
-        self.render = render # set render
-        t_start = time.time() # record time 
-        to_device(torch.device("cpu"), self.policy) # set cpu
-        thread_batch_size = int(math.floor(min_batch_size / self.num_threads)) # number of threads for batch size
-        queue = multiprocessing.Queue() # set parallel multi processing
-        workers = [] # number of worker
+        self.render = render  # set render
+        t_start = time.time()  # record time
+        to_device(torch.device("cpu"), self.policy)  # set cpu
+        thread_batch_size = int(
+            math.floor(min_batch_size / self.num_threads)
+        )  # number of threads for batch size
+        queue = multiprocessing.Queue()  # set parallel multi processing
+        workers = []  # number of worker
 
         for i in range(self.num_threads - 1):
             worker_args = (
@@ -91,7 +93,7 @@ class BipedalWalkerAgent:
 
         worker_logs = [None] * len(workers)
         worker_memories = [None] * len(workers)
-        
+
         for _ in workers:
             rand_init, worker_memory, worker_log = queue.get()
             worker_memories[rand_init - 1] = worker_memory
@@ -99,20 +101,20 @@ class BipedalWalkerAgent:
         for worker_memory in worker_memories:
             memory.append(worker_memory)
         batch = memory.sample()
-        
+
         if self.num_threads > 1:
             log_list = [log] + worker_logs
             log = concat_log(log_list)
-            
+
         to_device(self.device, self.policy)
         t_end = time.time()
-        
+
         # save sampling time, mean, min, max action values
         log["sample_time"] = t_end - t_start
         log["action_mean"] = np.mean(np.vstack(batch.action), axis=0)
         log["action_min"] = np.min(np.vstack(batch.action), axis=0)
         log["action_max"] = np.max(np.vstack(batch.action), axis=0)
-        
+
         return batch, log
 
 
@@ -155,28 +157,34 @@ def collect_samples(
     max_c_reward = -1e6
     num_episodes = 0
 
-    while num_steps < min_batch_size: # execute while not exceed the min batch size
+    while num_steps < min_batch_size:  # execute while not exceed the min batch size
         state = env.reset()
-        
-        if running_state is not None: # if there is running state
-            state = running_state(state)
-            
-        reward_episode = 0 # initialize reward
 
-        for t in range(10000): # for 10000 time step
+        if running_state is not None:  # if there is running state
+            state = running_state(state)
+
+        reward_episode = 0  # initialize reward
+
+        for t in range(10000):  # for 10000 time step
             state_var = torch.Tensor(state).unsqueeze(0)
-            with torch.no_grad(): 
-                if mean_action: # if there is a mean action value, then take action according to the policy network
+            with torch.no_grad():
+                if (
+                    mean_action
+                ):  # if there is a mean action value, then take action according to the policy network
                     action = policy(state_var)[0][0].numpy()
                 else:
                     action = policy.select_action(state_var)[0].numpy()
-            
-            action = int(action) if policy.is_disc_action else action.astype(np.float64) # convert action to int or float
-            
-            next_state, reward, done, _ = env.step(action) # takle action amd cp;;ect omfp
-            
-            reward_episode += reward # collect reward
-            
+
+            action = (
+                int(action) if policy.is_disc_action else action.astype(np.float64)
+            )  # convert action to int or float
+
+            next_state, reward, done, _ = env.step(
+                action
+            )  # takle action amd cp;;ect omfp
+
+            reward_episode += reward  # collect reward
+
             if running_state is not None:
                 next_state = running_state(next_state)
 
@@ -211,8 +219,10 @@ def collect_samples(
     log["avg_reward"] = total_reward / num_episodes
     log["max_reward"] = max_reward
     log["min_reward"] = min_reward
-    
-    if custom_reward is not None: # if there is custom reward produced by the critic network
+
+    if (
+        custom_reward is not None
+    ):  # if there is custom reward produced by the critic network
         log["total_c_reward"] = total_c_reward
         log["avg_c_reward"] = total_c_reward / num_steps
         log["max_c_reward"] = max_c_reward

@@ -62,51 +62,27 @@ class Policy(nn.Module):
             x: input
 
         Returns:
-            action
+            Selected action value
         """
         action_mean, _, action_std = self.forward(x)
         action = torch.normal(action_mean, action_std)
         selected_action = action.data
+
         return selected_action
 
-    def get_kl(self, x):
-        mean1, log_std1, std1 = self.forward(x)
-
-        mean0 = Variable(mean1.data)
-        log_std0 = Variable(log_std1.data)
-        std0 = Variable(std1.data)
-        kl = (
-            log_std1
-            - log_std0
-            + (std0.pow(2) + (mean0 - mean1).pow(2)) / (2.0 * std1.pow(2))
-            - 0.5
-        )
-        return kl.sum(1, keepdim=True)
-
     def get_log_prob(self, x, actions):
-        action_mean, action_log_std, action_std = self.forward(x)
-        return normal_log_density(actions, action_mean, action_log_std, action_std)
+        """Returns log probability
 
-    def get_log_prob_entropy(self, x, actions):
+        Args:
+            x: input
+            actions: actions
+
+        Returns:
+            Normalized log density action
+        """
         action_mean, action_log_std, action_std = self.forward(x)
-        entropy = 0.5 + 0.5 * math.log(2 * math.pi) + action_log_std
-        entropy = entropy.sum(-1).mean()
-        entropy *= self.entropy_coef
-        return (
-            normal_log_density(actions, action_mean, action_log_std, action_std),
-            entropy,
+        normalized_log_action = normal_log_density(
+            actions, action_mean, action_log_std, action_std
         )
 
-    def get_fim(self, x):
-        mean, _, _ = self.forward(x)
-        cov_inv = self.action_log_std.data.exp().pow(-2).squeeze(0).repeat(x.size(0))
-        param_count = 0
-        std_index = 0
-        id = 0
-        for name, param in self.named_parameters():
-            if name == "action_log_std":
-                std_id = id
-                std_index = param_count
-            param_count += param.data.view(-1).shape[0]
-            id += 1
-        return cov_inv, mean, {"std_id": std_id, "std_index": std_index}
+        return normalized_log_action

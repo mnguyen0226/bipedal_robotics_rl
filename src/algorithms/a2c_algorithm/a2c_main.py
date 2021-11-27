@@ -3,6 +3,11 @@
 # ECE 5984 - Reinforcement Learning
 # 11/21/2021
 
+# Inspired Reference: https://github.com/lnpalmer/A2C
+# Inspired Reference: https://github.com/floodsung/a2c_cartpole_pytorch
+# Reading: https://lilianweng.github.io/lil-log/2018/04/08/policy-gradient-algorithms.html
+
+
 import gym
 import torch
 import os
@@ -73,7 +78,7 @@ agent = BipedalWalkerAgent(
     policy_net,
     device,
     running_state=running_state,
-    RENDER=False,
+    render=False,
     num_threads=1,
 )
 
@@ -84,7 +89,9 @@ def saved_assets_dir():
     Returns:
         Paths to asset directory
     """
-    return path.abspath(path.join(path.dirname(path.abspath(__file__)), "../assets"))
+    return path.abspath(
+        path.join(path.dirname(path.abspath(__file__)), "../../../assets")
+    )
 
 
 def update_a2c_params(batch):
@@ -100,11 +107,14 @@ def update_a2c_params(batch):
     with torch.no_grad():
         values = value_net(states)
 
-    advantages, returns = estimate_advantages( # get estimated advantage from stepping trajectories
+    (
+        advantages,
+        returns,
+    ) = estimate_advantages(  # get estimated advantage from stepping trajectories
         rewards, masks, values, GAMMA, TAU, device
     )
 
-    a2c_step( # run A2C algorithm
+    a2c_step(  # run A2C algorithm updates
         policy_net,
         value_net,
         optimizer_policy,
@@ -120,7 +130,7 @@ def update_a2c_params(batch):
 def a2c_main():
     """User Interface"""
     t0 = time.time()
-    
+
     # plot
     plot = plt.figure()
     xval, yval = [], []
@@ -139,7 +149,7 @@ def a2c_main():
 
         update_a2c_params(batch)
 
-        if (i_iter % LOG_INTERVAL == 0):
+        if i_iter % LOG_INTERVAL == 0:
             print(f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}')
 
         # plot
@@ -153,7 +163,7 @@ def a2c_main():
         if SAVE_MODEL_INTERVAL > 0 and (i_iter + 1) % SAVE_MODEL_INTERVAL == 0:
             to_device(torch.device("cpu"), policy_net, value_net)
 
-            pickle.dump( # write the trained model to folder
+            pickle.dump(  # write the trained model to folder
                 (policy_net, value_net, running_state),
                 open(
                     os.path.join(
@@ -167,7 +177,7 @@ def a2c_main():
 
         # clean up gpu memory after every iteration
         torch.cuda.empty_cache()
-        
+
     t1 = time.time()
     print(f"All episodes finished. Training time of A2C is: {t1-t0}")
 
