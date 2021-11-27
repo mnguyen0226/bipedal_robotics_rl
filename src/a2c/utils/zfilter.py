@@ -1,88 +1,41 @@
-import torch
 import numpy as np
 
+# Source: https://github.com/joschu/modular_rl
+# Source: http://www.johndcook.com/blog/standard_deviation/
 
-def to_device(device, *args):
-    """Gets the model to train on CPU or GPU
+class RunningStat(object):
+    def __init__(self, shape):
+        self._n = 0
+        self._M = np.zeros(shape)
+        self._S = np.zeros(shape)
 
-    Args:
-        device: GPU or CPU
-
-    Returns:
-        Have all training parameters to be trained on CPU or GPU
-    """
-    return [x.to(device) for x in args]
-
-
-def get_flat_params_from(model):
-    """Haves all training parameters to be in 1 dimension tensor
-
-    Args:
-        model: model
-
-    Returns:
-        flatten paramters
-    """
-    params = []
-    for param in model.parameters():
-        params.append(param.view(-1))
-
-    flat_params = torch.cat(params)
-    return flat_params
-
-
-def set_flat_params_to(model, flat_params):
-    """Set flat parameters
-
-    Args:
-        model: model
-        flat_params: parameters from get_flat_params_from()
-    """
-    prev_ind = 0
-    for param in model.parameters():
-        flat_size = int(np.prod(list(param.size())))
-        param.data.copy_(
-            flat_params[prev_ind:prev_ind + flat_size].view(param.size()))
-        prev_ind += flat_size
-
-
-def get_flat_grad_from(inputs, grad_grad=False):
-    grads = []
-    for param in inputs:
-        if grad_grad:
-            grads.append(param.grad.grad.view(-1))
+    def push(self, x):
+        x = np.asarray(x)
+        assert x.shape == self._M.shape
+        self._n += 1
+        if self._n == 1:
+            self._M[...] = x
         else:
-            if param.grad is None:
-                grads.append(torch.zeros(param.view(-1).shape))
-            else:
-                grads.append(param.grad.view(-1))
+            oldM = self._M.copy()
+            self._M[...] = oldM + (x - oldM) / self._n
+            self._S[...] = self._S + (x - oldM) * (x - self._M)
 
-    flat_grad = torch.cat(grads)
-    return flat_grad
+    @property
+    def n(self):
+        return self._n
 
+    @property
+    def mean(self):
+        return self._M
 
-def compute_flat_grad(output, inputs, filter_input_ids=set(), retain_graph=False, create_graph=False):
-    if create_graph:
-        retain_graph = True
+    @property
+    def var(self):
+        return self._S / (self._n - 1) if self._n > 1 else np.square(self._M)
 
-    inputs = list(inputs)
-    params = []
-    for i, param in enumerate(inputs):
-        if i not in filter_input_ids:
-            params.append(param)
+    @property
+    def std(self):
+        return np.sqrt(self.var)
 
-    grads = torch.autograd.grad(output, params, retain_graph=retain_graph, create_graph=create_graph)
-
-    j = 0
-    out_grads = []
-    for i, param in enumerate(inputs):
-        if i in filter_input_ids:
-            out_grads.append(torch.zeros(param.view(-1).shape, device=param.device, dtype=param.dtype))
-        else:
-            out_grads.append(grads[j].view(-1))
-            j += 1
-    grads = torch.cat(out_grads)
-
-    for param in params:
-        param.grad = None
-    return grads
+    @property
+    def shape(self):
+        return self._M.shape
