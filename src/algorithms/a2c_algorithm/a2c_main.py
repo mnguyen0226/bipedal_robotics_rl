@@ -95,7 +95,7 @@ def update_params(batch):
         rewards, masks, values, gamma, tau, device
     )
 
-    """perform TRPO update"""
+    """perform mini batch A2C update"""
     a2c_step(
         policy_net,
         value_net,
@@ -110,7 +110,7 @@ def update_params(batch):
 
 
 ###############################
-def main():
+def a2c_main():
     # plot
     plot = plt.figure()
     xval, yval = [], []
@@ -158,7 +158,7 @@ def main():
                 open(
                     os.path.join(
                         assets_dir(),
-                        "learned_models/a2c_algorithm/{}_a2c.p".format(env_name),
+                        "learned_models/a2c_algorithm/bipedal_walker_v2_a2c.p",
                     ),
                     "wb",
                 ),
@@ -172,4 +172,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    a2c_main()

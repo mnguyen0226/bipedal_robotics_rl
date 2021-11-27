@@ -1,4 +1,4 @@
-# Implementation of Bipedal Walking with A2C - Advantage Actor Critics
+# Implementation of Bipedal Walking with PPO - Proximal Policy Optimization
 # By Minh Nguyen
 # ECE 5984 - Reinforcement Learning
 # 11/21/2021
@@ -9,19 +9,20 @@ import os
 import sys
 import pickle
 import time
+import math
 from os import path
 import matplotlib.pyplot as plt
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from utils.additional_torch import to_device
-from models import Policy
-from models import Value
-from a2c import a2c_step
-from a2c import estimate_advantages
-from a2c import Agent
+from algorithms.utils.additional_torch import to_device
+from algorithms.ppo_algorithm import Policy
+from algorithms.ppo_algorithm import Value
+from algorithms.ppo_algorithm import ppo_step
+from algorithms.a2c_algorithm import estimate_advantages
+from algorithms.a2c_algorithm import Agent
+from algorithms.utils import ZFilter
 import numpy as np
-from utils.zfilter import ZFilter
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
@@ -33,8 +34,11 @@ max_num_iter = 1000  # 50000
 render = False
 min_batch_size = 2048
 log_interval = 1
-save_model_interval = 100
+save_model_interval = 2
+clip_epsilon = 0.2
 env_name = "BipedalWalker-v2"
+optim_epochs = 10
+optim_batch_size = 64
 
 ###############################
 dtype = torch.float64
@@ -89,28 +93,58 @@ def update_params(batch):
     masks = torch.from_numpy(np.stack(batch.mask)).to(dtype).to(device)
     with torch.no_grad():
         values = value_net(states)
+        fixed_log_probs = policy_net.get_log_prob(states, actions)
 
     """get advantage estimation from the trajectories"""
     advantages, returns = estimate_advantages(
         rewards, masks, values, gamma, tau, device
     )
 
-    """perform TRPO update"""
-    a2c_step(
-        policy_net,
-        value_net,
-        optimizer_policy,
-        optimizer_value,
-        states,
-        actions,
-        returns,
-        advantages,
-        l2_reg,
-    )
+    """perform mini batch PPO update"""
+    optim_iter_num = int(math.ceil(states.shape[0] / optim_batch_size))
+    for _ in range(optim_epochs):
+        perm = np.arange(states.shape[0])
+        np.random.shuffle(perm)
+        perm = torch.LongTensor(perm).to(device)
+
+        states, actions, returns, advantages, fixed_log_probs = (
+            states[perm].clone(),
+            actions[perm].clone(),
+            returns[perm].clone(),
+            advantages[perm].clone(),
+            fixed_log_probs[perm].clone(),
+        )
+
+        for i in range(optim_iter_num):
+            ind = slice(
+                i * optim_batch_size, min((i + 1) * optim_batch_size, states.shape[0])
+            )
+            states_b, actions_b, advantages_b, returns_b, fixed_log_probs_b = (
+                states[ind],
+                actions[ind],
+                advantages[ind],
+                returns[ind],
+                fixed_log_probs[ind],
+            )
+
+            ppo_step(
+                policy_net,
+                value_net,
+                optimizer_policy,
+                optimizer_value,
+                1,
+                states_b,
+                actions_b,
+                returns_b,
+                advantages_b,
+                fixed_log_probs_b,
+                clip_epsilon,
+                l2_reg,
+            )
 
 
 ###############################
-def main():
+def ppo_main():
     # plot
     plot = plt.figure()
     xval, yval = [], []
@@ -148,7 +182,7 @@ def main():
         yval.append(log["max_reward"])
         plotLine.set_xdata(xval)
         plotLine.set_ydata(yval)
-        plot.savefig("./src/a2c_algorithm/a2c_max_reward")
+        plot.savefig("./results/ppo_max_reward")
 
         if save_model_interval > 0 and (i_iter + 1) % save_model_interval == 0:
             to_device(torch.device("cpu"), policy_net, value_net)
@@ -158,7 +192,7 @@ def main():
                 open(
                     os.path.join(
                         assets_dir(),
-                        "learned_models/a2c_algorithm/{}_a2c.p".format(env_name),
+                        "learned_models/ppo_algorithm/bipedal_walker_v2_ppo.p",
                     ),
                     "wb",
                 ),
@@ -172,4 +206,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    ppo_main()

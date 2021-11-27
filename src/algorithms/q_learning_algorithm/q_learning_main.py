@@ -10,7 +10,7 @@ from collections import defaultdict
 from algorithms.q_learning_algorithm import q_learning
 
 
-def main():
+def q_learning_main():
     """User Interface"""
     # initialize hyperparameters
     highest_reward = -300
@@ -56,4 +56,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    q_learning_main()
