@@ -5,6 +5,7 @@
 
 import numpy as np
 import gym
+import time
 import matplotlib.pyplot as plt
 from collections import defaultdict
 from algorithms.q_learning_algorithm import q_learning
@@ -12,6 +13,8 @@ from algorithms.q_learning_algorithm import q_learning
 
 def q_learning_main():
     """User Interface"""
+    t0 = time.time()
+
     # initialize hyperparameters
     highest_reward = -300
     num_episodes = 1000  # number of episode
@@ -51,10 +54,8 @@ def q_learning_main():
         plotLine.set_ydata(yval)
         plot.savefig("./results/q_learning_max_reward")
 
-    print(
-        "All episodes finished. Highest reward per episode achieved: "
-        + str(highest_reward)
-    )
+    t1 = time.time()
+    print(f"All episodes finished. Training time of Q Learning is: {t1-t0}")
 
 
 if __name__ == "__main__":

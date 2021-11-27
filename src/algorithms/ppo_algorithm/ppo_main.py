@@ -20,7 +20,7 @@ from algorithms.ppo_algorithm import Policy
 from algorithms.ppo_algorithm import Value
 from algorithms.ppo_algorithm import ppo_step
 from algorithms.a2c_algorithm import estimate_advantages
-from algorithms.a2c_algorithm import Agent
+from algorithms.a2c_algorithm import BipedalWalkerAgent
 from algorithms.utils import ZFilter
 import numpy as np
 
@@ -72,7 +72,7 @@ optimizer_policy = torch.optim.Adam(policy_net.parameters(), lr=4e-4)
 optimizer_value = torch.optim.Adam(value_net.parameters(), lr=8e-4)
 
 # create agent
-agent = Agent(
+agent = BipedalWalkerAgent(
     env,
     policy_net,
     device,
