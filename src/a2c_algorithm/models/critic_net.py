@@ -12,7 +12,7 @@ class Value(nn.Module):
             hidden_size: hidden layers' sizes. Defaults to (200,128).
         """
         super().__init__()
-        self.activateion = F.relu
+        self.activation = F.relu
         self.affine_layers_v = nn.ModuleList()
         self.bn_layers_v = nn.ModuleList()
         last_dim = state_dim
