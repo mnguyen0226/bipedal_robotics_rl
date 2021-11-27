@@ -3,7 +3,6 @@
 # ECE 5984 - Reinforcement Learning
 # 11/21/2021
 
-import argparse
 import gym
 import torch
 import os
@@ -18,13 +17,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.additional_torch import to_device
 from models import Policy
 from models import Value
-from models import DiscretePolicy
 from a2c import a2c_step
 from a2c import estimate_advantages
 from a2c import Agent
 import numpy as np
 from utils.zfilter import ZFilter
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 ################################
 l2_reg = 1e-3
@@ -115,14 +114,14 @@ def main():
     # plot
     plot = plt.figure()
     xval, yval = [], []
-    subplot = plot.add_subplot()   
+    subplot = plot.add_subplot()
     plt.xlabel("Number Episodes")
     plt.ylabel("Rewards")
     plt.title("Rewards vs Number Episodes")
     (plotLine,) = subplot.plot(xval, yval)
     subplot.set_xlim([0, max_num_iter])
     subplot.set_ylim([-400, 400])
-    
+
     # run iteration
     for i_iter in range(max_num_iter):
         """generate multiple trajectories that reach the minimum batch_size"""
@@ -143,7 +142,7 @@ def main():
                     log["avg_reward"],
                 )
             )
-        
+
         # plot
         xval.append(i_iter)
         yval.append(log["max_reward"])
@@ -158,7 +157,8 @@ def main():
                 (policy_net, value_net, running_state),
                 open(
                     os.path.join(
-                        assets_dir(), "learned_models/a2c_algorithm/{}_a2c.p".format(env_name)
+                        assets_dir(),
+                        "learned_models/a2c_algorithm/{}_a2c.p".format(env_name),
                     ),
                     "wb",
                 ),
@@ -169,6 +169,7 @@ def main():
         torch.cuda.empty_cache()
 
     print("All episodes finished.")
+
 
 if __name__ == "__main__":
     main()
