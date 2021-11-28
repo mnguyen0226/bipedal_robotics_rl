@@ -38,7 +38,7 @@ MAX_NUM_ITER = 1000  # 50000
 RENDER = False
 MIN_BATCH_SIZE = 2048
 LOG_INTERVAL = 1
-SAVE_MODEL_INTERVAL = 2
+SAVE_MODEL_INTERVAL = 100
 ENV_NAME = "BipedalWalker-v2"
 
 # set datatype
@@ -137,7 +137,7 @@ def a2c_main():
     subplot = plot.add_subplot()
     plt.xlabel("Number Episodes")
     plt.ylabel("Rewards")
-    plt.title("Rewards vs Number Episodes")
+    plt.title("A2C Rewards vs Number Episodes")
     (plotLine,) = subplot.plot(xval, yval)
     subplot.set_xlim([0, MAX_NUM_ITER])
     subplot.set_ylim([-400, 400])

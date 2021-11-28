@@ -32,7 +32,7 @@ def q_learning_main():
     subplot = plot.add_subplot()
     plt.xlabel("Number Episodes")
     plt.ylabel("Rewards")
-    plt.title("Rewards vs Number Episodes")
+    plt.title("Q-Learning Rewards vs Number Episodes")
     (plotLine,) = subplot.plot(xval, yval)
     subplot.set_xlim([0, num_episodes])
     subplot.set_ylim([-220, -80])
