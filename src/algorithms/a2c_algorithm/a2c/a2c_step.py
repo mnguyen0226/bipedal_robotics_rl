@@ -39,10 +39,10 @@ def a2c_step(
 
     # update Policy network
     log_probs = policy_net.get_log_prob(states, actions)  # get log probabilities
-    policy_loss = -(log_probs * advantages).mean()  # intilize loss value
+    policy_loss = -(log_probs * advantages).mean()  # initialize loss value
     optimizer_policy.zero_grad()  # initialize gradients to 0s
     policy_loss.backward()  # back propagation
     torch.nn.utils.clip_grad_norm_(
         policy_net.parameters(), 40
     )  # clip the gradient to avoid overfit of under fit
-    optimizer_policy.step()  # update gradients
+    optimizer_policy.step() # update gradients

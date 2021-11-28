@@ -1,8 +1,6 @@
-import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.autograd import Variable
 from algorithms.utils import normal_log_density
 from algorithms.utils import set_init
 

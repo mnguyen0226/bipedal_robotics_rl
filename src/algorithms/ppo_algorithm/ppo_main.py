@@ -92,8 +92,9 @@ def saved_assets_dir():
     Returns:
         Paths to asset directory
     """
-    return path.abspath(path.join(path.dirname(path.abspath(__file__)), "../assets"))
-
+    return path.abspath(
+        path.join(path.dirname(path.abspath(__file__)), "../../../assets")
+    )
 
 def update_ppo_params(batch):
     """Updates training parameters by taking steps from PPO algorithm
@@ -160,8 +161,10 @@ def update_ppo_params(batch):
             )
 
 
-###############################
 def ppo_main():
+    """User Interface"""
+    t0 = time.time()
+
     # plot
     plot = plt.figure()
     xval, yval = [], []
@@ -175,24 +178,14 @@ def ppo_main():
 
     # run iteration
     for i_iter in range(MAX_NUM_ITER):
-        """generate multiple trajectories that reach the minimum batch_size"""
+        # generates multiple trajectories that reach the min_batch_size
         batch, log = agent.collect_samples(MIN_BATCH_SIZE, RENDER)
 
-        t0 = time.time()
         update_ppo_params(batch)
-        t1 = time.time()
 
-        if i_iter % LOG_INTERVAL == 0:
-            print(
-                "{}\tT_sample {:.4f}\tT_update {:.4f}\tR_min {:.2f}\tR_max {:.2f}\tR_avg {:.2f}".format(
-                    i_iter,
-                    log["sample_time"],
-                    t1 - t0,
-                    log["min_reward"],
-                    log["max_reward"],
-                    log["avg_reward"],
-                )
-            )
+        if(i_iter % LOG_INTERVAL == 0):
+            print(f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}')
+
 
         # plot
         xval.append(i_iter)
@@ -201,10 +194,10 @@ def ppo_main():
         plotLine.set_ydata(yval)
         plot.savefig("./results/ppo_max_reward")
 
-        if SAVE_MODEL_INTERVAL > 0 and (i_iter + 1) % SAVE_MODEL_INTERVAL == 0:
+        if(SAVE_MODEL_INTERVAL > 0 and (i_iter + 1) % SAVE_MODEL_INTERVAL == 0):
             to_device(torch.device("cpu"), policy_net, value_net)
 
-            pickle.dump(
+            pickle.dump(  # write the trained model to folder
                 (policy_net, value_net, running_state),
                 open(
                     os.path.join(
@@ -216,11 +209,9 @@ def ppo_main():
             )
             to_device(device, policy_net, value_net)
 
-        """clean up gpu memory"""
+        # clean up gpu memory after every iteration
         torch.cuda.empty_cache()
 
-    print("All episodes finished.")
 
-
-if __name__ == "__main__":
-    ppo_main()
+    t1 = time.time()
+    print(f"All episodes finished. Training time of PPO is: {t1-t0}")

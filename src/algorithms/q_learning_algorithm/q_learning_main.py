@@ -56,7 +56,3 @@ def q_learning_main():
 
     t1 = time.time()
     print(f"All episodes finished. Training time of Q Learning is: {t1-t0}")
-
-
-if __name__ == "__main__":
-    q_learning_main()
