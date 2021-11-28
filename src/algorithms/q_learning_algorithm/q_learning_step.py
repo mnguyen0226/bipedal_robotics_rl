@@ -1,8 +1,3 @@
-# Implementation of Bipedal Walking with Q Learning
-# By Minh Nguyen
-# ECE 5984 - Reinforcement Learning
-# 11/20/2021
-
 import numpy as np
 import random
 import math

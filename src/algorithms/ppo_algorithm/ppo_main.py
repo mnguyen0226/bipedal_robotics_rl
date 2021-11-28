@@ -96,6 +96,7 @@ def saved_assets_dir():
         path.join(path.dirname(path.abspath(__file__)), "../../../assets")
     )
 
+
 def update_ppo_params(batch):
     """Updates training parameters by taking steps from PPO algorithm
 
@@ -183,9 +184,8 @@ def ppo_main():
 
         update_ppo_params(batch)
 
-        if(i_iter % LOG_INTERVAL == 0):
+        if i_iter % LOG_INTERVAL == 0:
             print(f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}')
-
 
         # plot
         xval.append(i_iter)
@@ -194,7 +194,7 @@ def ppo_main():
         plotLine.set_ydata(yval)
         plot.savefig("./results/ppo_max_reward")
 
-        if(SAVE_MODEL_INTERVAL > 0 and (i_iter + 1) % SAVE_MODEL_INTERVAL == 0):
+        if SAVE_MODEL_INTERVAL > 0 and (i_iter + 1) % SAVE_MODEL_INTERVAL == 0:
             to_device(torch.device("cpu"), policy_net, value_net)
 
             pickle.dump(  # write the trained model to folder
@@ -211,7 +211,6 @@ def ppo_main():
 
         # clean up gpu memory after every iteration
         torch.cuda.empty_cache()
-
 
     t1 = time.time()
     print(f"All episodes finished. Training time of PPO is: {t1-t0}")

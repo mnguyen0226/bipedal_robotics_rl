@@ -72,6 +72,8 @@ class Policy(nn.Module):
             Normalized log density action
         """
         action_mean, action_log_std, action_std = self.forward(x)
-        normalized_log_action = normal_log_density(actions, action_mean, action_log_std, action_std)
+        normalized_log_action = normal_log_density(
+            actions, action_mean, action_log_std, action_std
+        )
 
         return normalized_log_action

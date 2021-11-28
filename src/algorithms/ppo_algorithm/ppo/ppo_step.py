@@ -26,7 +26,7 @@ def ppo_step(
         states: states array
         actions: action array
         returns: returns values
-        advantages: estimated advantage values 
+        advantages: estimated advantage values
         fixed_log_probs: fixed log probabilities
         clip_epsilon: clip epsilon to avoid overfit or underfit
         l2_reg: L2 Regularization
@@ -38,18 +38,20 @@ def ppo_step(
         # weight decays with L2 Regularization
         for param in value_net.parameters():
             value_loss += param.pow(2).sum() * l2_reg
-            
-        optimizer_value.zero_grad() # initialize gradients to 0s
+
+        optimizer_value.zero_grad()  # initialize gradients to 0s
         value_loss.backward()  # back propagation
-        optimizer_value.step() # update gradients
+        optimizer_value.step()  # update gradients
 
     # update Policy network
-    log_probs = policy_net.get_log_prob(states, actions) # get log probabilities
+    log_probs = policy_net.get_log_prob(states, actions)  # get log probabilities
     ratio = torch.exp(log_probs - fixed_log_probs)
     surr1 = ratio * advantages
     surr2 = torch.clamp(ratio, 1.0 - clip_epsilon, 1.0 + clip_epsilon) * advantages
     policy_surr = -torch.min(surr1, surr2).mean()
-    optimizer_policy.zero_grad() # initialize gradients to 0s
-    policy_surr.backward() # back propagation
-    torch.nn.utils.clip_grad_norm_(policy_net.parameters(), 40)  # clip the gradient to avoid overfit of under fit
-    optimizer_policy.step() # update gradients
+    optimizer_policy.zero_grad()  # initialize gradients to 0s
+    policy_surr.backward()  # back propagation
+    torch.nn.utils.clip_grad_norm_(
+        policy_net.parameters(), 40
+    )  # clip the gradient to avoid overfit of under fit
+    optimizer_policy.step()  # update gradients

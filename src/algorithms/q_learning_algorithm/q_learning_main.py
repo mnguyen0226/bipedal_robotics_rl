@@ -3,6 +3,8 @@
 # ECE 5984 - Reinforcement Learning
 # 11/20/2021
 
+# Inspired Reference: https://github.com/sweetice/Deep-reinforcement-learning-with-pytorch
+
 import numpy as np
 import gym
 import time

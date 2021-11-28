@@ -149,7 +149,7 @@ def a2c_main():
 
         update_a2c_params(batch)
 
-        if(i_iter % LOG_INTERVAL == 0):
+        if i_iter % LOG_INTERVAL == 0:
             print(f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}')
 
         # plot
@@ -160,7 +160,7 @@ def a2c_main():
         plot.savefig("./results/a2c_max_reward")
 
         # optional: save trained model
-        if(SAVE_MODEL_INTERVAL > 0 and (i_iter + 1) % SAVE_MODEL_INTERVAL == 0):
+        if SAVE_MODEL_INTERVAL > 0 and (i_iter + 1) % SAVE_MODEL_INTERVAL == 0:
             to_device(torch.device("cpu"), policy_net, value_net)
 
             pickle.dump(  # write the trained model to folder

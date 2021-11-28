@@ -45,4 +45,4 @@ def a2c_step(
     torch.nn.utils.clip_grad_norm_(
         policy_net.parameters(), 40
     )  # clip the gradient to avoid overfit of under fit
-    optimizer_policy.step() # update gradients
+    optimizer_policy.step()  # update gradients
