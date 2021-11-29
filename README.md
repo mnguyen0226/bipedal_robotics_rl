@@ -23,7 +23,6 @@ Plan for results:
 - Number of episode
 - Check other website
 
-- Complete Results by Tuesday
-- Complete Paper Sypnosis by Wednesday + Start writing paper, Complete by Friday
-- Start CV paper soon -> Start the draft tonight.
-- Start CV HW
+- Paper: 
+https://www.overleaf.com/latex/templates/neurips-2021/bfjnthbqvhgs
+https://www.overleaf.com/latex/templates/icml2021-template/dsftnbmjgyhv
