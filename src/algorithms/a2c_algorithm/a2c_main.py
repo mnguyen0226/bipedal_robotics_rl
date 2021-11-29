@@ -35,7 +35,7 @@ L2_REG = 1e-3
 GAMMA = 0.99
 TAU = 0.95
 MAX_NUM_ITER = 1000  # 50000
-RENDER = False
+RENDER = False # True
 MIN_BATCH_SIZE = 2048
 LOG_INTERVAL = 1
 SAVE_MODEL_INTERVAL = 100
@@ -66,6 +66,11 @@ env.seed(1)
 # define actor and critic network
 policy_net = Policy(state_dim, env.action_space.shape[0], log_std=-1.0)
 value_net = Value(state_dim)
+
+# Test Trained Loaded
+# policy_net, value_net, running_state = pickle.load(open("assets/learned_models/a2c_algorithm/jn_bipedal_walker_v2_a2c.p", "rb"))
+
+
 policy_net.to(device)
 value_net.to(device)
 
@@ -168,7 +173,7 @@ def a2c_main():
                 open(
                     os.path.join(
                         saved_assets_dir(),
-                        "learned_models/a2c_algorithm/bipedal_walker_v2_a2c.p",
+                        "learned_models/a2c_algorithm/Bipedal_walker_v2_a2c.p",
                     ),
                     "wb",
                 ),
