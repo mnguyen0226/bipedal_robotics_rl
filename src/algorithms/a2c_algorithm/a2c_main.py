@@ -32,7 +32,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # initialize global variable
 L2_REG = 1e-3
-GAMMA = 0.99
+GAMMA = 0.99 # discount factor
 TAU = 0.95
 MAX_NUM_ITER = 1000  # 50000
 RENDER = False # True
@@ -119,15 +119,15 @@ def update_a2c_params(batch):
     )
 
     a2c_step(  # run A2C algorithm updates
-        policy_net,
-        value_net,
-        optimizer_policy,
-        optimizer_value,
-        states,
-        actions,
-        returns,
-        advantages,
-        L2_REG,
+        policy_net = policy_net,
+        value_net = value_net,
+        optimizer_policy = optimizer_policy,
+        optimizer_value = optimizer_value,
+        states = states,
+        actions = actions,
+        returns = returns,
+        advantages = advantages,
+        l2_reg = L2_REG,
     )
 
 
