@@ -13,10 +13,10 @@ def main():
     q_learning_main()
     
     # train a2c gae
-    a2c_main()
+    # a2c_main()
     
     # train ppo gae
-    ppo_main()
+    # ppo_main()
 
 
 if __name__ == "__main__":
