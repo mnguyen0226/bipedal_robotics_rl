@@ -1,4 +1,4 @@
-# Implementation of Bipedal Walking with A2C - Advantage Actor Critics
+# Implementation of Bipedal Walking with A2C + GAE - Advantage Actor Critics with Generalized Advantage Estimation
 # By Minh Nguyen
 # ECE 5984 - Reinforcement Learning
 # 11/21/2021
@@ -98,7 +98,7 @@ def saved_assets_dir():
     )
 
 
-def update_a2c_params(batch):
+def update_a2c_params(batch, tau):
     """Updates training parameters by taking steps from A2C algorithm
 
     Args:
@@ -115,7 +115,7 @@ def update_a2c_params(batch):
         advantages,
         returns,
     ) = estimate_advantages(  # get estimated advantage from stepping trajectories
-        rewards, masks, values, GAMMA, TAU, device
+        rewards = rewards, masks = masks, values = values, gamma = GAMMA, tau = tau, device = device
     )
 
     a2c_step(  # run A2C algorithm updates
@@ -133,54 +133,80 @@ def update_a2c_params(batch):
 
 def a2c_main():
     """User Interface"""
-    t0 = time.time()
+    
+    # log training date
+    localtime = time.asctime( time.localtime(time.time()) )
+    with open('assets/training_times/a2c_algorithm/training_time.txt', 'a') as f: 
+        f.write(localtime)
+        f.write('----------\n')
+    
+    # list of tau / lambda value 
+    tau_list = [0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
+    color_list = ['black', 'red', 'yellow', 'green', 'darkblue', 'orange']
 
     # plot
     plot = plt.figure()
-    xval, yval = [], []
     subplot = plot.add_subplot()
-    plt.xlabel("Number Episodes")
-    plt.ylabel("Rewards")
-    plt.title("A2C Rewards vs Number Episodes")
-    (plotLine,) = subplot.plot(xval, yval)
-    subplot.set_xlim([0, MAX_NUM_ITER])
-    subplot.set_ylim([-400, 400])
 
-    # run iteration
-    for i_iter in range(MAX_NUM_ITER):
-        # generates multiple trajectories that reach the min_batch_size
-        batch, log = agent.collect_samples(MIN_BATCH_SIZE, RENDER)
+    for i in range(len(tau_list)):
+        t0 = time.time() # for logging training time
+        
+        # plot 
+        xval, yval = [], []
+        plt.xlabel("Number Episodes")
+        plt.ylabel("Rewards")
+        plt.title("Bipedal Walker v2\nA2C_GAE Rewards vs Number Episodes\nwith gamma=0.99, num_episodes=5000")
+        (plotLine,) = subplot.plot(xval, yval)
+        subplot.set_xlim([0, MAX_NUM_ITER])
+        subplot.set_ylim([-400, 400])
 
-        update_a2c_params(batch)
+        # run iteration
+        for i_iter in range(MAX_NUM_ITER):
+            # generates multiple trajectories that reach the min_batch_size
+            batch, log = agent.collect_samples(MIN_BATCH_SIZE, RENDER)
 
-        if i_iter % LOG_INTERVAL == 0:
-            print(f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}')
+            update_a2c_params(batch, tau_list[i])
 
-        # plot
-        xval.append(i_iter)
-        yval.append(log["max_reward"])
-        plotLine.set_xdata(xval)
-        plotLine.set_ydata(yval)
-        plot.savefig("./results/a2c_max_reward")
+            if i_iter % LOG_INTERVAL == 0:
+                print(f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}')
 
-        # optional: save trained model
-        if SAVE_MODEL_INTERVAL > 0 and (i_iter + 1) % SAVE_MODEL_INTERVAL == 0:
-            to_device(torch.device("cpu"), policy_net, value_net)
+            # append plot
+            xval.append(i_iter)
+            yval.append(log["max_reward"])
+            plotLine.set_xdata(xval)
+            plotLine.set_ydata(yval)
+            plot.savefig("./results/a2c_max_reward")
 
-            pickle.dump(  # write the trained model to folder
-                (policy_net, value_net, running_state),
-                open(
-                    os.path.join(
-                        saved_assets_dir(),
-                        "learned_models/a2c_algorithm/Bipedal_walker_v2_a2c.p",
+            # optional: save trained model
+            if SAVE_MODEL_INTERVAL > 0 and (i_iter + 1) % SAVE_MODEL_INTERVAL == 0:
+                to_device(torch.device("cpu"), policy_net, value_net)
+
+                pickle.dump(  # write the trained model to folder
+                    (policy_net, value_net, running_state),
+                    open(
+                        os.path.join(
+                            saved_assets_dir(),
+                            "learned_models/a2c_algorithm/Bipedal_walker_v2_a2c.p",
+                        ),
+                        "wb",
                     ),
-                    "wb",
-                ),
-            )
-            to_device(device, policy_net, value_net)
+                )
+                to_device(device, policy_net, value_net)
 
-        # clean up gpu memory after every iteration
-        torch.cuda.empty_cache()
+            # clean up gpu memory after every iteration
+            torch.cuda.empty_cache()
+        
+        # plot legend
+        plot.legend(loc="upper right")
 
-    t1 = time.time()
-    print(f"All episodes finished. Training time of A2C is: {t1-t0}")
+        t1 = time.time()
+        print(f"All episodes finished. Training time of A2C is: {t1-t0}")
+        
+        # write training time to file
+        with open('assets/training_times/a2c_algorithm/training_time.txt', 'a') as f: 
+            f.write('- The training time for 5000 episode of A2C_GAE with the λ-return/tau-return of ')
+            f.write(str(tau_list[i]))
+            f.write(' is: ')
+            f.write(str(t1-t0))
+            f.write(' seconds.\n')
+

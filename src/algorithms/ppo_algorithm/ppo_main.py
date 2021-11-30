@@ -1,4 +1,4 @@
-# Implementation of Bipedal Walking with PPO - Proximal Policy Optimization
+# Implementation of Bipedal Walking with PPO + GAE - Proximal Policy Optimization with Generalized Advantage Estimation
 # By Minh Nguyen
 # ECE 5984 - Reinforcement Learning
 # 11/21/2021
@@ -147,18 +147,18 @@ def update_ppo_params(batch):
             )
 
             ppo_step(  # run A2C algorithm updates
-                policy_net,
-                value_net,
-                optimizer_policy,
-                optimizer_value,
-                1,
-                states_b,
-                actions_b,
-                returns_b,
-                advantages_b,
-                fixed_log_probs_b,
-                CLIP_EPSILON,
-                L2_REG,
+                policy_net = policy_net,
+                value_net = value_net,
+                optimizer_policy = optimizer_policy,
+                optimizer_value = optimizer_value,
+                optim_value_iter_num = 1,
+                states = states_b,
+                actions = actions_b,
+                returns = returns_b,
+                advantages = advantages_b,
+                fixed_log_probs = fixed_log_probs_b,
+                clip_epsilon = CLIP_EPSILON,
+                l2_reg = L2_REG,
             )
 
 

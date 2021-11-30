@@ -13,7 +13,6 @@ from collections import defaultdict
 from algorithms.q_learning_algorithm import q_learning
 
 
-
 def q_learning_main():
     """User Interface"""
     # log training date
