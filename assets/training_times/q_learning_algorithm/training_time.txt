@@ -1,0 +1,9 @@
+Mon Nov 29 17:41:48 2021----------
+- The training time for 5000 episode of Q-Learning with the learning rate of 0.0001 is: 17.94345760345459 seconds.
+- The training time for 5000 episode of Q-Learning with the learning rate of 0.001 is: 13.837816953659058 seconds.
+- The training time for 5000 episode of Q-Learning with the learning rate of 0.01 is: 15.85075569152832 seconds.
+- The training time for 5000 episode of Q-Learning with the learning rate of 0.1 is: 19.351409912109375 seconds.
+- The training time for 5000 episode of Q-Learning with the learning rate of 0.3 is: 18.772311210632324 seconds.
+- The training time for 5000 episode of Q-Learning with the learning rate of 0.5 is: 17.882253170013428 seconds.
+- The training time for 5000 episode of Q-Learning with the learning rate of 0.7 is: 23.64699697494507 seconds.
+- The training time for 5000 episode of Q-Learning with the learning rate of 0.9 is: 22.359130144119263 seconds.

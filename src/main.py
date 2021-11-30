@@ -9,8 +9,8 @@ from algorithms.q_learning_algorithm.q_learning_main import q_learning_main
 
 
 def main():
-    # q_learning_main()
-    a2c_main()
+    q_learning_main()
+    # a2c_main()
     # ppo_main()
 
 
