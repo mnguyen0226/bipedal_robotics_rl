@@ -33,7 +33,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 # initialize global variable
 L2_REG = 1e-3
 GAMMA = 0.99 # discount factor
-MAX_NUM_ITER = 3  # 50000
+MAX_NUM_ITER = 5000  # 50000
 RENDER = False # True
 MIN_BATCH_SIZE = 2048
 LOG_INTERVAL = 1 # print out rate
@@ -170,7 +170,7 @@ def a2c_main():
                 print(f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}')
 
             # if agent was able to get the highest rewards of 300, then log the episode number
-            if(log["max_reward"] < 0.0):
+            if(log["max_reward"] >= 300.0):
                 with open('assets/log_episodes_300_rewards/a2c_algorithm/log_300.txt', 'a') as f: 
                     f.write('Episode ' + str(i_iter+1) + ' of lambda/tau ' + str(tau_list[i]) +' has the reward of ' + str(log["max_reward"]) + '.\n')
                     f.close()

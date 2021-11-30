@@ -34,7 +34,7 @@ def q_learning_main():
 
         # initialize hyperparameters
         highest_reward = -300
-        num_episodes = 5  # number of episode
+        num_episodes = 5000  # number of episode
         gamma = 0.99  # discount factor
 
         env = gym.make("BipedalWalker-v2")
@@ -64,7 +64,7 @@ def q_learning_main():
             print(f"Episode {j} finished. Highest reward: {highest_reward}")
 
             # if agent was able to get the highest rewards of 300, then log the episode number
-            if(highest_reward < 300.0):
+            if(highest_reward >= 300.0):
                 with open('assets/log_episodes_300_rewards/q_learning_algorithm/log_300.txt', 'a') as f: 
                     f.write('Episode ' + str(j) + ' of learning rate ' + str(alpha_list[i]) + ' has the reward of ' + str(highest_reward) + '.\n')
                     f.close()

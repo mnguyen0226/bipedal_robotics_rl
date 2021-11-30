@@ -1,4 +1,4 @@
-# Implementation of Bipedal Walking with Q Learning, A2C_GAE, PPO
+# Implementation of Bipedal Walking with Q Learning, A2C_GAE, PPO_GAE
 # By Minh Nguyen
 # ECE 5984 - Reinforcement Learning
 # 11/20/2021
