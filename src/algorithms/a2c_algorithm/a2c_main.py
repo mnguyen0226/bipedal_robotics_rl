@@ -33,11 +33,10 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 # initialize global variable
 L2_REG = 1e-3
 GAMMA = 0.99 # discount factor
-TAU = 0.95
-MAX_NUM_ITER = 1000  # 50000
+MAX_NUM_ITER = 3  # 50000
 RENDER = False # True
 MIN_BATCH_SIZE = 2048
-LOG_INTERVAL = 1
+LOG_INTERVAL = 1 # print out rate
 SAVE_MODEL_INTERVAL = 100
 ENV_NAME = "BipedalWalker-v2"
 
@@ -68,7 +67,7 @@ policy_net = Policy(state_dim, env.action_space.shape[0], log_std=-1.0)
 value_net = Value(state_dim)
 
 # Test Trained Loaded
-# policy_net, value_net, running_state = pickle.load(open("assets/learned_models/a2c_algorithm/jn_bipedal_walker_v2_a2c.p", "rb"))
+# policy_net, value_net, running_state = pickle.load(open("assets/learned_models/a2c_algorithm/Bipedal_walker_v2_a2c.p", "rb"))
 
 policy_net.to(device)
 value_net.to(device)
@@ -133,7 +132,6 @@ def update_a2c_params(batch, tau):
 
 def a2c_main():
     """User Interface"""
-    
     # log training date
     localtime = time.asctime( time.localtime(time.time()) )
     with open('assets/training_times/a2c_algorithm/training_time.txt', 'a') as f: 
@@ -155,10 +153,11 @@ def a2c_main():
         xval, yval = [], []
         plt.xlabel("Number Episodes")
         plt.ylabel("Rewards")
-        plt.title("Bipedal Walker v2\nA2C_GAE Rewards vs Number Episodes\nwith gamma=0.99, num_episodes=5000")
-        (plotLine,) = subplot.plot(xval, yval)
+        plt.title("Bipedal Walker v2 with A2C_GAE\ngamma=0.99, num_episodes=5000,\nL2_reg=1e-3, min_batch_size=2048")
+        string_label = "λ/tau = " + str(tau_list[i])
+        (plotLine,) = subplot.plot(xval, yval, color_list[i], label=string_label)
         subplot.set_xlim([0, MAX_NUM_ITER])
-        subplot.set_ylim([-400, 400])
+        subplot.set_ylim([-300, 400])
 
         # run iteration
         for i_iter in range(MAX_NUM_ITER):
@@ -169,6 +168,12 @@ def a2c_main():
 
             if i_iter % LOG_INTERVAL == 0:
                 print(f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}')
+
+            # if agent was able to get the highest rewards of 300, then log the episode number
+            if(log["max_reward"] < 0.0):
+                with open('assets/log_episodes_300_rewards/a2c_algorithm/log_300.txt', 'a') as f: 
+                    f.write('Episode ' + str(i_iter+1) + ' of lambda/tau ' + str(tau_list[i]) +' has the reward of ' + str(log["max_reward"]) + '.\n')
+                    f.close()
 
             # append plot
             xval.append(i_iter)
@@ -204,9 +209,10 @@ def a2c_main():
         
         # write training time to file
         with open('assets/training_times/a2c_algorithm/training_time.txt', 'a') as f: 
-            f.write('- The training time for 5000 episode of A2C_GAE with the λ-return/tau-return of ')
+            f.write('- The training time for 5000 episode of A2C_GAE with the lambda-return/tau-return of ')
             f.write(str(tau_list[i]))
             f.write(' is: ')
             f.write(str(t1-t0))
             f.write(' seconds.\n')
+            f.close()
 

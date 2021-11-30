@@ -41,3 +41,6 @@ https://www.overleaf.com/latex/templates/neurips-2021/bfjnthbqvhgs
 https://www.overleaf.com/latex/templates/icml2021-template/dsftnbmjgyhv
 
 IDEA: May Implement TRPO if have time
+
+
+CHANGE 300 log , 5000 time step

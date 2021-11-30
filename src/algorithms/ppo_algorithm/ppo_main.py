@@ -33,8 +33,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 # initialize global variable
 L2_REG = 1e-3
 GAMMA = 0.99
-TAU = 0.95
-MAX_NUM_ITER = 1000  # 50000
+MAX_NUM_ITER = 3  # 50000
 RENDER = False
 MIN_BATCH_SIZE = 2048
 LOG_INTERVAL = 1
@@ -69,6 +68,10 @@ env.seed(1)
 # define actor and critic network
 policy_net = Policy(state_dim, env.action_space.shape[0], log_std=-1.0)
 value_net = Value(state_dim)
+
+# Test Trained Loaded
+# policy_net, value_net, running_state = pickle.load(open("assets/learned_models/ppo_algorithm/Bipedal_walker_v2_ppo.p", "rb"))
+
 policy_net.to(device)
 value_net.to(device)
 
@@ -97,7 +100,7 @@ def saved_assets_dir():
     )
 
 
-def update_ppo_params(batch):
+def update_ppo_params(batch, tau):
     """Updates training parameters by taking steps from PPO algorithm
 
     Args:
@@ -115,7 +118,7 @@ def update_ppo_params(batch):
         advantages,
         returns,
     ) = estimate_advantages(  # get estimated advantage from stepping trajectories
-        rewards, masks, values, GAMMA, TAU, device
+        rewards = rewards, masks = masks, values = values, gamma = GAMMA, tau = tau, device = device
     )
 
     # mini batch PPO update
@@ -146,7 +149,7 @@ def update_ppo_params(batch):
                 fixed_log_probs[ind],
             )
 
-            ppo_step(  # run A2C algorithm updates
+            ppo_step(  # run PPO algorithm updates
                 policy_net = policy_net,
                 value_net = value_net,
                 optimizer_policy = optimizer_policy,
@@ -164,53 +167,85 @@ def update_ppo_params(batch):
 
 def ppo_main():
     """User Interface"""
-    t0 = time.time()
-
+    # log training date
+    localtime = time.asctime( time.localtime(time.time()) )
+    with open('assets/training_times/ppo_algorithm/training_time.txt', 'a') as f: 
+        f.write(localtime)
+        f.write('----------\n')
+    
+    # list of tau / lambda value 
+    tau_list = [0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
+    color_list = ['black', 'red', 'yellow', 'green', 'darkblue', 'orange']
+    
     # plot
     plot = plt.figure()
-    xval, yval = [], []
     subplot = plot.add_subplot()
-    plt.xlabel("Number Episodes")
-    plt.ylabel("Rewards")
-    plt.title("PPO Rewards vs Number Episodes")
-    (plotLine,) = subplot.plot(xval, yval)
-    subplot.set_xlim([0, MAX_NUM_ITER])
-    subplot.set_ylim([-400, 400])
 
-    # run iteration
-    for i_iter in range(MAX_NUM_ITER):
-        # generates multiple trajectories that reach the min_batch_size
-        batch, log = agent.collect_samples(MIN_BATCH_SIZE, RENDER)
-
-        update_ppo_params(batch)
-
-        if i_iter % LOG_INTERVAL == 0:
-            print(f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}')
+    for i in range(len(tau_list)):
+        t0 = time.time() # for logging training time
 
         # plot
-        xval.append(i_iter)
-        yval.append(log["max_reward"])
-        plotLine.set_xdata(xval)
-        plotLine.set_ydata(yval)
-        plot.savefig("./results/ppo_max_reward")
+        xval, yval = [], []
+        plt.xlabel("Number Episodes")
+        plt.ylabel("Rewards")
+        plt.title("Bipedal Walker v2 with PPO_GAE\ngamma=0.99, num_episodes=5000, clip_epsilon=0.2\nL2_reg=1e-3, min_batch_size=2048, optim_batch_size=64")
+        string_label = "λ/tau = " + str(tau_list[i])
+        (plotLine,) = subplot.plot(xval, yval, color_list[i], label=string_label)
+        subplot.set_xlim([0, MAX_NUM_ITER])
+        subplot.set_ylim([-300, 400])
 
-        if SAVE_MODEL_INTERVAL > 0 and (i_iter + 1) % SAVE_MODEL_INTERVAL == 0:
-            to_device(torch.device("cpu"), policy_net, value_net)
+        # run iteration
+        for i_iter in range(MAX_NUM_ITER):
+            # generates multiple trajectories that reach the min_batch_size
+            batch, log = agent.collect_samples(MIN_BATCH_SIZE, RENDER)
 
-            pickle.dump(  # write the trained model to folder
-                (policy_net, value_net, running_state),
-                open(
-                    os.path.join(
-                        saved_assets_dir(),
-                        "learned_models/ppo_algorithm/bipedal_walker_v2_ppo.p",
+            update_ppo_params(batch, tau_list[i])
+
+            if i_iter % LOG_INTERVAL == 0:
+                print(f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}')
+
+            # if agent was able to get the highest rewards of 300, then log the episode number
+            if(log["max_reward"] < 0.0):
+                with open('assets/log_episodes_300_rewards/ppo_algorithm/log_300.txt', 'a') as f: 
+                    f.write('Episode ' + str(i_iter+1) + ' of lambda/tau ' + str(tau_list[i]) +' has the reward of ' + str(log["max_reward"]) + '.\n')
+                    f.close()
+
+            # plot
+            xval.append(i_iter)
+            yval.append(log["max_reward"])
+            plotLine.set_xdata(xval)
+            plotLine.set_ydata(yval)
+            plot.savefig("./results/ppo_max_reward")
+
+            if SAVE_MODEL_INTERVAL > 0 and (i_iter + 1) % SAVE_MODEL_INTERVAL == 0:
+                to_device(torch.device("cpu"), policy_net, value_net)
+
+                pickle.dump(  # write the trained model to folder
+                    (policy_net, value_net, running_state),
+                    open(
+                        os.path.join(
+                            saved_assets_dir(),
+                            "learned_models/ppo_algorithm/bipedal_walker_v2_ppo.p",
+                        ),
+                        "wb",
                     ),
-                    "wb",
-                ),
-            )
-            to_device(device, policy_net, value_net)
+                )
+                to_device(device, policy_net, value_net)
 
-        # clean up gpu memory after every iteration
-        torch.cuda.empty_cache()
+            # clean up gpu memory after every iteration
+            torch.cuda.empty_cache()
 
-    t1 = time.time()
-    print(f"All episodes finished. Training time of PPO is: {t1-t0}")
+       # plot legend
+        plot.legend(loc="upper right")
+        
+        t1 = time.time()
+        print(f"All episodes finished. Training time of PPO is: {t1-t0}")
+
+        # write training time to file
+        with open('assets/training_times/ppo_algorithm/training_time.txt', 'a') as f: 
+            f.write('- The training time for 5000 episode of PPO_GAE with the lambda-return/tau-return of ')
+            f.write(str(tau_list[i]))
+            f.write(' is: ')
+            f.write(str(t1-t0))
+            f.write(' seconds.\n')
+            f.close()

@@ -1,4 +1,4 @@
-# Implementation of Bipedal Walking with Q Learning, A2C, A2C GAE, PPO
+# Implementation of Bipedal Walking with Q Learning, A2C_GAE, PPO
 # By Minh Nguyen
 # ECE 5984 - Reinforcement Learning
 # 11/20/2021
@@ -9,9 +9,14 @@ from algorithms.q_learning_algorithm.q_learning_main import q_learning_main
 
 
 def main():
+    # train q leanring
     q_learning_main()
-    # a2c_main()
-    # ppo_main()
+    
+    # train a2c gae
+    a2c_main()
+    
+    # train ppo gae
+    ppo_main()
 
 
 if __name__ == "__main__":
