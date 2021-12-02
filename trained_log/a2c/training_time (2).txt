@@ -1,0 +1,12 @@
+Wed Dec  1 00:04:27 2021----------
+- The training time for 1000 episode of A2C_GAE with the lambda-return/tau-return of 0.5 is: 1704.118888616562 seconds.
+- The training time for 1000 episode of A2C_GAE with the lambda-return/tau-return of 0.7 is: 1736.5052983760834 seconds.
+Wed Dec  1 01:29:05 2021----------
+Wed Dec  1 01:43:05 2021----------
+Wed Dec  1 01:56:31 2021----------
+- The training time for 1000 episode of A2C_GAE with the lambda-return/tau-return of 0.5 is: 1729.003001689911 seconds.
+- The training time for 1000 episode of A2C_GAE with the lambda-return/tau-return of 0.7 is: 1761.119174003601 seconds.
+- The training time for 1000 episode of A2C_GAE with the lambda-return/tau-return of 0.9 is: 1902.8150460720062 seconds.
+- The training time for 1000 episode of A2C_GAE with the lambda-return/tau-return of 0.95 is: 1864.0463979244232 seconds.
+- The training time for 1000 episode of A2C_GAE with the lambda-return/tau-return of 0.97 is: 1573.3859598636627 seconds.
+- The training time for 1000 episode of A2C_GAE with the lambda-return/tau-return of 0.99 is: 1571.0874910354614 seconds.

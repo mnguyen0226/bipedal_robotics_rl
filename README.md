@@ -31,10 +31,12 @@ such as generalized advantage estimation of (Schulmanet al., 2015b)."
 
 => Save graphs + Render video on local machine (pick the gae that has the highest trend)
 
+- Discuss the advantage and disadvantage of the three equation
 - Compare with top benchmark AI - Plot number of episode / ? (https://github.com/openai/gym/wiki/Leaderboard)
 - Compare result between each other and between DDPG algorithms project: http://arxiv-export-lb.library.cornell.edu/pdf/1807.05924 _ IEEE
 
 COMPARISON METRICS: Rewards/Episodes (Graph), Timer (log), Number of episode that reach 300 rewards 
+- CHANGE 300 log , 5000 time step
 
 - Paper: 
 https://www.overleaf.com/latex/templates/neurips-2021/bfjnthbqvhgs
@@ -43,4 +45,3 @@ https://www.overleaf.com/latex/templates/icml2021-template/dsftnbmjgyhv
 IDEA: May Implement TRPO if have time
 
 
-CHANGE 300 log , 5000 time step
