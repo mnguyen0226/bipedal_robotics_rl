@@ -70,7 +70,7 @@ policy_net = Policy(state_dim, env.action_space.shape[0], log_std=-1.0)
 value_net = Value(state_dim)
 
 # test trained model
-# policy_net, value_net, running_state = pickle.load(open("assets/learned_models/ppo_algorithm/Bipedal_walker_v2_ppo.p", "rb"))
+# policy_net, value_net, running_state = pickle.load(open("assets/learned_models/ppo_algorithm/bipedal_walker_v2_ppo_cpu.p", "rb"))
 
 # comment out these two line below if you decided to test the train model line above
 policy_net.to(device)
@@ -245,7 +245,7 @@ def ppo_main():
                     open(
                         os.path.join(
                             saved_assets_dir(),
-                            "learned_models/ppo_algorithm/cpu_bipedal_walker_v2_ppo.p",
+                            "learned_models/ppo_algorithm/bipedal_walker_v2_ppo_cpu.p",
                         ),
                         "wb",
                     ),

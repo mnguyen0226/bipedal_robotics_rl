@@ -70,7 +70,7 @@ value_net = Value(state_dim)
 
 # test trained model
 # policy_net, value_net, running_state = pickle.load(
-#     open("assets/learned_models/a2c_algorithm/cpu_bipedal_walker_v2_a2c.p", "rb")
+#     open("assets/learned_models/a2c_algorithm/bipedal_walker_v2_a2c_cpu.p", "rb")
 # )
 
 # comment out these two line below if you decided to test the train model line above
