@@ -33,8 +33,8 @@ def q_learning_main():
         t0 = time.time() # for logging training time
 
         # initialize hyperparameters
-        highest_reward = -300
-        num_episodes = 5000  # number of episode
+        highest_reward = -400
+        num_episodes = 1000  # number of episode
         gamma = 0.99  # discount factor
 
         env = gym.make("BipedalWalker-v2")
@@ -44,7 +44,7 @@ def q_learning_main():
         xval, yval = [], []
         plt.xlabel("Number Episodes")
         plt.ylabel("Rewards")
-        plt.title("Bipedal Walker v2\nQ-Learning Rewards vs Number Episodes\nwith gamma=0.99, num_episodes=5000")
+        plt.title("Bipedal Walker v2\nQ-Learning Rewards vs Number Episodes\nwith gamma=0.99, num_episodes=1000")
         string_label = "λ = " + str(alpha_list[i])
         (plotLine,) = subplot.plot(xval, yval, color_list[i], label=string_label)
         subplot.set_xlim([0, num_episodes])
@@ -76,7 +76,7 @@ def q_learning_main():
             plotLine.set_ydata(yval)
             plot.savefig("./results/q_learning_max_reward")
         
-        # plot legend
+        # plot legend upper right of the graph
         plot.legend(loc="upper right")
        
         t1 = time.time()
@@ -84,7 +84,7 @@ def q_learning_main():
         
         # write training time to file
         with open('assets/training_times/q_learning_algorithm/training_time.txt', 'a') as f: 
-            f.write('- The training time for 5000 episode of Q-Learning with the learning rate of ')
+            f.write('- The training time for 1000 episode of Q-Learning with the learning rate of ')
             f.write(str(alpha_list[i]))
             f.write(' is: ')
             f.write(str(t1-t0))
