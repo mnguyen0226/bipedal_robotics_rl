@@ -18,7 +18,7 @@ class Policy(nn.Module):
             log_std: log standard deviation. Defaults to 0.
         """
         super().__init__()
-        self.is_disc_action = False
+        self.is_disc_action = False  # not discounted action
         self.activation = F.relu
         self.affine_layers_p = nn.ModuleList()
         self.bn_layers_p = nn.ModuleList()

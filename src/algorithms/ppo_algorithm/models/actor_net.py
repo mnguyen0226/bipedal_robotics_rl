@@ -14,7 +14,7 @@ class Policy(nn.Module):
             log_std: log standard deviation. Defaults to 0.
         """
         super().__init__()
-        self.is_disc_action = False
+        self.is_disc_action = False  # not discounted action
         self.activation = torch.tanh
 
         self.affine_layers = nn.ModuleList()

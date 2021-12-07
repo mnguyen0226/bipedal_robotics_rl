@@ -12,7 +12,6 @@ class Value(nn.Module):
         """
         super().__init__()
         self.activation = torch.tanh
-
         self.affine_layers = nn.ModuleList()
         last_dim = state_dim
         for nh in hidden_size:

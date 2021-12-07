@@ -35,7 +35,7 @@ L2_REG = 1e-3
 GAMMA = 0.99
 MAX_NUM_ITER = 1000  # number of epoch
 RENDER = False
-MIN_BATCH_SIZE = 2048 # mini batch size
+MIN_BATCH_SIZE = 2048  # mini batch size
 LOG_INTERVAL = 1
 SAVE_MODEL_INTERVAL = 100
 CLIP_EPSILON = 0.2
@@ -59,7 +59,7 @@ env = gym.make(ENV_NAME)
 state_dim = env.observation_space.shape[0]
 is_disc_action = len(env.action_space.shape) == 0
 
-#initialize the clipping variable ϵ >= 0
+# initialize the clipping variable ϵ >= 0
 running_state = AlgorithmRunManagement((state_dim,), clip=5)
 
 # seeding
@@ -117,7 +117,7 @@ def update_ppo_params(batch, tau):
     masks = torch.from_numpy(np.stack(batch.mask)).to(dtype).to(device)
     with torch.no_grad():
         # set θAold = θA
-        values = value_net(states)        
+        values = value_net(states)
         fixed_log_probs = policy_net.get_log_prob(states, actions)
 
     (
@@ -129,7 +129,7 @@ def update_ppo_params(batch, tau):
 
     # create N number of batches with initialized batch size.
     optim_iter_num = int(math.ceil(states.shape[0] / OPTIM_BATCH_SIZE))
-    
+
     # for number of epochs do
     for _ in range(OPTIM_EPOCHS):
         perm = np.arange(states.shape[0])
@@ -143,13 +143,13 @@ def update_ppo_params(batch, tau):
             advantages[perm].clone(),
             fixed_log_probs[perm].clone(),
         )
-        
+
         # for number of minibatches do
         for i in range(optim_iter_num):
             ind = slice(
                 i * OPTIM_BATCH_SIZE, min((i + 1) * OPTIM_BATCH_SIZE, states.shape[0])
-            ) # index in the mini-batch
-            
+            )  # index in the mini-batch
+
             # get info from each mini batch
             states_b, actions_b, advantages_b, returns_b, fixed_log_probs_b = (
                 states[ind],

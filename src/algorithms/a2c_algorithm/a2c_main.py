@@ -33,7 +33,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 # initialize global variable
 # L2 regularization can deal with the multicollinearity (independent variables are highly correlated)
 # problems through constricting the coefficient and by keeping all the variables.
-L2_REG = 1e-3  # calculate error with L2 regularization
+L2_REG = 1e-3
 GAMMA = 0.99  # discount factor
 MAX_NUM_ITER = 1000  # 5000
 RENDER = False  # True
@@ -76,6 +76,7 @@ value_net = Value(state_dim)
 # comment out these two line below if you decided to test the train model line above
 policy_net.to(device)
 value_net.to(device)
+
 
 optimizer_policy = torch.optim.Adam(policy_net.parameters(), lr=4e-4)
 optimizer_value = torch.optim.Adam(value_net.parameters(), lr=8e-4)
@@ -147,7 +148,7 @@ def a2c_main():
 
     # list of tau / lambda value: a parameter γ that allows us to reduce variance by downweighting rewards
     # corresponding to delayed effects, at the cost of introducing bias
-    tau_list = [0.99] #[0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
+    tau_list = [0.99]  # [0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
     color_list = ["black", "red", "yellow", "green", "darkblue", "orange"]
 
     # plot

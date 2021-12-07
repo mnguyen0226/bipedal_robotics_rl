@@ -37,30 +37,30 @@ def ppo_step(
     # update Critic value network
     for _ in range(optim_value_iter_num):
         values_pred = value_net(states)
-        value_loss = (values_pred - returns).pow(2).mean() # MSE for critic network
+        value_loss = (values_pred - returns).pow(2).mean()  # MSE for critic network
         # weight decays with L2 Regularization
         for param in value_net.parameters():
             value_loss += param.pow(2).sum() * l2_reg
 
         optimizer_value.zero_grad()  # initialize gradients to 0s
-        
+
         # update Critic parameters with Adam optimizer using back propagation
-        value_loss.backward()  
-        optimizer_value.step() 
+        value_loss.backward()
+        optimizer_value.step()
 
     # update Policy network
     log_probs = policy_net.get_log_prob(states, actions)  # get log probabilities
-    
-    # calculate the clipped surrogate objective function 
+
+    # calculate the clipped surrogate objective function
     ratio = torch.exp(log_probs - fixed_log_probs)
-    surr1 = ratio * advantages 
+    surr1 = ratio * advantages
     surr2 = torch.clamp(ratio, 1.0 - clip_epsilon, 1.0 + clip_epsilon) * advantages
-    policy_surr = -torch.min(surr1, surr2).mean() # policy net loss
-    
+    policy_surr = -torch.min(surr1, surr2).mean()  # policy net loss
+
     optimizer_policy.zero_grad()  # initialize gradients to 0s
-    
+
     # update Actor parameters with Adam optimizer using back propagation
-    policy_surr.backward() 
+    policy_surr.backward()
     torch.nn.utils.clip_grad_norm_(
         policy_net.parameters(), 40
     )  # clip the gradient to avoid overfit of under fit
