@@ -1,4 +1,4 @@
-Tue Dec  7 01:15:02 2021----------
+Tue Dec  7 01:15:02 2021---------- CPU Train
 - The training time for 1000 episode of Q-Learning with the learning rate of 0.0001 is: 284.0581033229828 seconds.
 - The training time for 1000 episode of Q-Learning with the learning rate of 0.001 is: 340.27018785476685 seconds.
 - The training time for 1000 episode of Q-Learning with the learning rate of 0.01 is: 331.7180142402649 seconds.
@@ -7,3 +7,4 @@ Tue Dec  7 01:15:02 2021----------
 - The training time for 1000 episode of Q-Learning with the learning rate of 0.5 is: 379.8058657646179 seconds.
 - The training time for 1000 episode of Q-Learning with the learning rate of 0.7 is: 432.57305002212524 seconds.
 - The training time for 1000 episode of Q-Learning with the learning rate of 0.9 is: 529.4722988605499 seconds.
+Tue Dec  7 12:39:33 2021----------

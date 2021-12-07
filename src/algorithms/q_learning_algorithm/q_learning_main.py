@@ -73,7 +73,7 @@ def q_learning_main():
                 highest_reward=highest_reward,
                 alpha=alpha_list[i],
                 gamma=gamma,
-                render=False,  # False
+                render=False
             )
             print(f"Episode {j} finished. Highest reward: {highest_reward}")
 

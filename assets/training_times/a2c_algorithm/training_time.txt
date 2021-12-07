@@ -1,2 +1,5 @@
 Tue Dec  7 02:26:06 2021----------
 - The training time for 1000 episode of A2C_GAE with the lambda-return/tau-return of 0.99 is: 34912.98066854477 seconds.
+Tue Dec  7 12:22:37 2021----------
+Tue Dec  7 12:25:33 2021----------
+Tue Dec  7 12:29:20 2021----------
