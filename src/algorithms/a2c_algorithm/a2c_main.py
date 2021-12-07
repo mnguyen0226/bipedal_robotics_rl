@@ -65,6 +65,7 @@ torch.manual_seed(1)
 env.seed(1)
 
 # define actor network, critic network
+# comment out these two line below if you decided to test the train model line
 policy_net = Policy(state_dim, env.action_space.shape[0], log_std=-1.0)
 value_net = Value(state_dim)
 
@@ -73,10 +74,8 @@ value_net = Value(state_dim)
 #     open("assets/learned_models/a2c_algorithm/bipedal_walker_v2_a2c_cpu.p", "rb")
 # )
 
-# comment out these two line below if you decided to test the train model line above
 policy_net.to(device)
 value_net.to(device)
-
 
 optimizer_policy = torch.optim.Adam(policy_net.parameters(), lr=4e-4)
 optimizer_value = torch.optim.Adam(value_net.parameters(), lr=8e-4)
