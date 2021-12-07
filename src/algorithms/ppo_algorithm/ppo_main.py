@@ -25,7 +25,7 @@ from algorithms.ppo_algorithm import Value
 from algorithms.ppo_algorithm import ppo_step
 from algorithms.a2c_algorithm import estimate_advantages
 from algorithms.a2c_algorithm import BipedalWalkerAgent
-from algorithms.utils import ZFilter
+from algorithms.utils import AlgorithmRunManagement
 import numpy as np
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -33,7 +33,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 # initialize global variable
 L2_REG = 1e-3
 GAMMA = 0.99
-MAX_NUM_ITER = 5000  # 50000
+MAX_NUM_ITER = 1000  # 50000
 RENDER = False
 MIN_BATCH_SIZE = 2048
 LOG_INTERVAL = 1
@@ -58,7 +58,7 @@ if torch.cuda.is_available():
 env = gym.make(ENV_NAME)
 state_dim = env.observation_space.shape[0]
 is_disc_action = len(env.action_space.shape) == 0
-running_state = ZFilter((state_dim,), clip=5)
+running_state = AlgorithmRunManagement((state_dim,), clip=5)
 
 # seeding
 np.random.seed(1)
@@ -174,7 +174,8 @@ def ppo_main():
         f.write('----------\n')
     
     # list of tau / lambda value 
-    tau_list = [0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
+    # tau_list = [0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
+    tau_list = [0.99]
     color_list = ['black', 'red', 'yellow', 'green', 'darkblue', 'orange']
     
     # plot
@@ -184,11 +185,14 @@ def ppo_main():
     for i in range(len(tau_list)):
         t0 = time.time() # for logging training time
 
+        # plot legend
+        plot.legend(loc="upper right")
+
         # plot
         xval, yval = [], []
         plt.xlabel("Number Episodes")
         plt.ylabel("Rewards")
-        plt.title("Bipedal Walker v2 with PPO_GAE\ngamma=0.99, num_episodes=5000, clip_epsilon=0.2\nL2_reg=1e-3, min_batch_size=2048, optim_batch_size=64")
+        plt.title("Bipedal Walker v2 with PPO_GAE\ngamma=0.90, num_episodes=1000, clip_epsilon=0.2\nL2_reg=1e-3, min_batch_size=2048, optim_batch_size=64")
         string_label = "λ/tau = " + str(tau_list[i])
         (plotLine,) = subplot.plot(xval, yval, color_list[i], label=string_label)
         subplot.set_xlim([0, MAX_NUM_ITER])
@@ -199,6 +203,7 @@ def ppo_main():
             # generates multiple trajectories that reach the min_batch_size
             batch, log = agent.collect_samples(MIN_BATCH_SIZE, RENDER)
 
+            # update the parameter for each time step - second for loop
             update_ppo_params(batch, tau_list[i])
 
             if i_iter % LOG_INTERVAL == 0:
@@ -225,7 +230,7 @@ def ppo_main():
                     open(
                         os.path.join(
                             saved_assets_dir(),
-                            "learned_models/ppo_algorithm/bipedal_walker_v2_ppo.p",
+                            "learned_models/ppo_algorithm/cpu_bipedal_walker_v2_ppo.p",
                         ),
                         "wb",
                     ),
@@ -234,16 +239,13 @@ def ppo_main():
 
             # clean up gpu memory after every iteration
             torch.cuda.empty_cache()
-
-       # plot legend
-        plot.legend(loc="upper right")
         
         t1 = time.time()
         print(f"All episodes finished. Training time of PPO is: {t1-t0}")
 
         # write training time to file
         with open('assets/training_times/ppo_algorithm/training_time.txt', 'a') as f: 
-            f.write('- The training time for 5000 episode of PPO_GAE with the lambda-return/tau-return of ')
+            f.write('- The training time for 1000 episode of PPO_GAE with the lambda-return/tau-return of ')
             f.write(str(tau_list[i]))
             f.write(' is: ')
             f.write(str(t1-t0))

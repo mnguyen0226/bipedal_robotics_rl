@@ -1,7 +1,8 @@
 from collections import namedtuple
 import random
 
-# Source: https://github.com/pytorch/tutorials/blob/master/Reinforcement%20(Q-)Learning%20with%20PyTorch.ipynb
+# Explanation: https://deeplizard.com/learn/video/Bcuj2fTH4_4
+# Reference: https://github.com/ziguiyingcang/Deep-Reinforcement-Learning-for-Traffic-Signal-Control/blob/main/agent_3DQN_PSER.py
 
 TransitionVal = namedtuple(
     "Transition", ("state", "action", "mask", "next_state", "reward")

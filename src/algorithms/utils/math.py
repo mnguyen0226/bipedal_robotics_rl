@@ -1,8 +1,8 @@
-import torch
 import math
 import torch.nn as nn
 
-
+# Normal Distribution / Gaussian distribution: 
+# https://medium.com/@mansiarora_20448/probability-distributions-in-machine-learning-98811eb1e8ea
 def normal_log_density(x, mean, log_std, std):
     """Returns normalized log density
 
@@ -23,6 +23,8 @@ def normal_log_density(x, mean, log_std, std):
 
 def set_init(layers):
     """Initializes values of layers in neural networks
+    Set network weight with means and standard deviation
+    Set network bias
 
     Args:
         layers: array of layers
