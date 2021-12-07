@@ -33,9 +33,9 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 # initialize global variable
 L2_REG = 1e-3
 GAMMA = 0.99
-MAX_NUM_ITER = 1000  # 50000
+MAX_NUM_ITER = 1000  # number of epoch
 RENDER = False
-MIN_BATCH_SIZE = 2048
+MIN_BATCH_SIZE = 2048 # mini batch size
 LOG_INTERVAL = 1
 SAVE_MODEL_INTERVAL = 100
 CLIP_EPSILON = 0.2
@@ -58,6 +58,8 @@ if torch.cuda.is_available():
 env = gym.make(ENV_NAME)
 state_dim = env.observation_space.shape[0]
 is_disc_action = len(env.action_space.shape) == 0
+
+#initialize the clipping variable ϵ >= 0
 running_state = AlgorithmRunManagement((state_dim,), clip=5)
 
 # seeding
@@ -107,12 +109,15 @@ def update_ppo_params(batch, tau):
     Args:
         batch: input batch
     """
+    # collect all state, action, reward, next state by stacking batch.
+    # thus this is similar to "for each interation" when run, here we only do 1 actor
     states = torch.from_numpy(np.stack(batch.state)).to(dtype).to(device)
     actions = torch.from_numpy(np.stack(batch.action)).to(dtype).to(device)
     rewards = torch.from_numpy(np.stack(batch.reward)).to(dtype).to(device)
     masks = torch.from_numpy(np.stack(batch.mask)).to(dtype).to(device)
     with torch.no_grad():
-        values = value_net(states)
+        # set θAold = θA
+        values = value_net(states)        
         fixed_log_probs = policy_net.get_log_prob(states, actions)
 
     (
@@ -122,9 +127,10 @@ def update_ppo_params(batch, tau):
         rewards=rewards, masks=masks, values=values, gamma=GAMMA, tau=tau, device=device
     )
 
-    # mini batch PPO update
+    # create N number of batches with initialized batch size.
     optim_iter_num = int(math.ceil(states.shape[0] / OPTIM_BATCH_SIZE))
-
+    
+    # for number of epochs do
     for _ in range(OPTIM_EPOCHS):
         perm = np.arange(states.shape[0])
         np.random.shuffle(perm)
@@ -137,11 +143,14 @@ def update_ppo_params(batch, tau):
             advantages[perm].clone(),
             fixed_log_probs[perm].clone(),
         )
-
+        
+        # for number of minibatches do
         for i in range(optim_iter_num):
             ind = slice(
                 i * OPTIM_BATCH_SIZE, min((i + 1) * OPTIM_BATCH_SIZE, states.shape[0])
-            )
+            ) # index in the mini-batch
+            
+            # get info from each mini batch
             states_b, actions_b, advantages_b, returns_b, fixed_log_probs_b = (
                 states[ind],
                 actions[ind],

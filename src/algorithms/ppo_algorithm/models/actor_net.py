@@ -5,7 +5,7 @@ from algorithms.utils.math import normal_log_density
 
 class Policy(nn.Module):
     def __init__(self, state_dim, action_dim, hidden_size=(128, 128), log_std=0):
-        """Constructor of Policy network
+        """Constructor of Actor network
 
         Args:
             state_dim: state dimension

@@ -4,7 +4,7 @@ import torch
 
 class Value(nn.Module):
     def __init__(self, state_dim, hidden_size=(128, 128)):
-        """Constructor of Value Critic network
+        """Constructor of Critic network
 
         Args:
             state_dim: state dimension
