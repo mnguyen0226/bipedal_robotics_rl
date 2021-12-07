@@ -5,11 +5,13 @@ from algorithms.utils import set_init
 
 class Value(nn.Module):
     def __init__(self, state_dim, hidden_size=(200, 128)):
-        """Constructor of Value Critic network
+        """Constructor of Critic network
+        A2C has a learned valuefunction that can provide a more informative feedback signal 
+        to a policy than the sequence of therewards available from the environment
 
         Args:
             state_dim: state dimension
-            hidden_size: hidden layers' sizes. Defaults to (200,128).
+            hidden_size: hidden layers' sizes. Defaults to (200, 128).
         """
         super().__init__()
         self.activation = F.relu

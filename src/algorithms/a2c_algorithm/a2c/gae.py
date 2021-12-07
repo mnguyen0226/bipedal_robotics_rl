@@ -5,7 +5,6 @@ from algorithms.utils import to_device
 # Reference: https://slm-lab.gitbook.io/slm-lab/development/algorithms/a2c
 # Reference: https://github.com/kengz/SLM-Lab
 
-
 def generalized_advantage_estimation(rewards, masks, values, gamma, tau, device):
     """Estimates advantages values for A2C with GAE
 

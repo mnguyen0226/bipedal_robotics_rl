@@ -31,9 +31,11 @@ import numpy as np
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # initialize global variable
-L2_REG = 1e-3
+# L2 regularization can deal with the multicollinearity (independent variables are highly correlated)
+# problems through constricting the coefficient and by keeping all the variables.
+L2_REG = 1e-3 # calculate error with L2 regularization
 GAMMA = 0.99  # discount factor
-MAX_NUM_ITER = 1000  # 50000
+MAX_NUM_ITER = 1000  # 5000
 RENDER = True  # True
 MIN_BATCH_SIZE = 2048
 LOG_INTERVAL = 1  # print out rate
@@ -63,13 +65,13 @@ torch.manual_seed(1)
 env.seed(1)
 
 # define actor and critic network
-# policy_net = Policy(state_dim, env.action_space.shape[0], log_std=-1.0)
-# value_net = Value(state_dim)
+policy_net = Policy(state_dim, env.action_space.shape[0], log_std=-1.0)
+value_net = Value(state_dim)
 
 # Test Trained Loaded
-policy_net, value_net, running_state = pickle.load(
-    open("assets/learned_models/a2c_algorithm/cpu_bipedal_walker_v2_a2c.p", "rb")
-)
+# policy_net, value_net, running_state = pickle.load(
+#     open("assets/learned_models/a2c_algorithm/cpu_bipedal_walker_v2_a2c.p", "rb")
+# )
 
 policy_net.to(device)
 value_net.to(device)
@@ -105,6 +107,8 @@ def update_a2c_params(batch, tau):
     Args:
         batch: input batch
     """
+    # collect all state, action, reward, next state by stacking batch. 
+    # thus this is similar to "for each step in the episode do" when run
     states = torch.from_numpy(np.stack(batch.state)).to(dtype).to(device)
     actions = torch.from_numpy(np.stack(batch.action)).to(dtype).to(device)
     rewards = torch.from_numpy(np.stack(batch.reward)).to(dtype).to(device)
@@ -133,16 +137,16 @@ def update_a2c_params(batch, tau):
 
 
 def a2c_main():
-    """User Interface"""
+    """A2C ALGORITHM"""
     # log training date
     localtime = time.asctime(time.localtime(time.time()))
     with open("assets/training_times/a2c_algorithm/training_time.txt", "a") as f:
         f.write(localtime)
         f.write("----------\n")
 
-    # list of tau / lambda value
-    # tau_list = [0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
-    tau_list = [0.99]
+    # list of tau / lambda value: a parameter γ that allows us to reduce variance by downweighting rewards 
+    # corresponding to delayed effects, at the cost of introducing bias
+    tau_list = [0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
     color_list = ["black", "red", "yellow", "green", "darkblue", "orange"]
 
     # plot
@@ -160,16 +164,16 @@ def a2c_main():
         plt.xlabel("Number Episodes")
         plt.ylabel("Rewards")
         plt.title(
-            "Bipedal Walker v2 with A2C_GAE\ngamma=0.99, num_episodes=5000,\nL2_reg=1e-3, min_batch_size=2048"
+            "Bipedal Walker v2 with A2C_GAE\ngamma=0.99, num_episodes=1000,\nL2_reg=1e-3, min_batch_size=2048"
         )
         string_label = "λ/tau = " + str(tau_list[i])
         (plotLine,) = subplot.plot(xval, yval, color_list[i], label=string_label)
         subplot.set_xlim([0, MAX_NUM_ITER])
         subplot.set_ylim([-300, 400])
 
-        # run iteration
+        # run iteration/episode
         for i_iter in range(MAX_NUM_ITER):
-            # generates multiple trajectories that reach the min_batch_size
+            # gather and store (st,at,rt,s′t) by acting in the environment using the current policy
             batch, log = agent.collect_samples(MIN_BATCH_SIZE, RENDER)
 
             # update the parameter for each time step - second for loop
@@ -212,7 +216,7 @@ def a2c_main():
                     open(
                         os.path.join(
                             saved_assets_dir(),
-                            "learned_models/a2c_algorithm/Bipedal_walker_v2_a2c.p",
+                            "learned_models/a2c_algorithm/bipedal_walker_v2_a2c_cpu.p",
                         ),
                         "wb",
                     ),

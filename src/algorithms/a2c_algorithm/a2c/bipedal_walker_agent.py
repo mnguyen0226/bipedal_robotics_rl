@@ -8,6 +8,7 @@ from algorithms.utils import Memory
 
 # Reference: https://github.com/pythonlessons/Reinforcement_Learning/blob/master/BipedalWalker-v3_PPO/BipedalWalker-v3_PPO.py
 # Reference: https://slm-lab.gitbook.io/slm-lab/development/algorithms/a2c
+# Reference: https://github.com/Khrylx/PyTorch-RL/blob/master/core/agent.py
 # Reference: https://github.com/kengz/SLM-Lab
 
 
