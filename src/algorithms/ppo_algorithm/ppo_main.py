@@ -34,7 +34,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 L2_REG = 1e-3
 GAMMA = 0.99
 MAX_NUM_ITER = 1000  # number of epoch
-RENDER = True
+RENDER = False
 MIN_BATCH_SIZE = 2048  # mini batch size
 LOG_INTERVAL = 1
 SAVE_MODEL_INTERVAL = 100
@@ -69,11 +69,11 @@ env.seed(1)
 
 # define actor and critic network
 # comment out these two line below if you decided to test the train model line
-# policy_net = Policy(state_dim, env.action_space.shape[0], log_std=-1.0)
-# value_net = Value(state_dim)
+policy_net = Policy(state_dim, env.action_space.shape[0], log_std=-1.0)
+value_net = Value(state_dim)
 
 # test trained model
-policy_net, value_net, running_state = pickle.load(open("assets/learned_models/ppo_algorithm/bipedal_walker_v2_ppo_cpu.p", "rb"))
+# policy_net, value_net, running_state = pickle.load(open("assets/learned_models/ppo_algorithm/bipedal_walker_v2_ppo_cpu.p", "rb"))
 
 policy_net.to(device)
 value_net.to(device)
