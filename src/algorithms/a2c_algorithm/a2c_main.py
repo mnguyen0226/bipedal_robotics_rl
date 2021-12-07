@@ -36,7 +36,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 L2_REG = 1e-3  # calculate error with L2 regularization
 GAMMA = 0.99  # discount factor
 MAX_NUM_ITER = 1000  # 5000
-RENDER = True  # True
+RENDER = False  # True
 MIN_BATCH_SIZE = 2048
 LOG_INTERVAL = 1  # print out rate
 SAVE_MODEL_INTERVAL = 100
@@ -147,7 +147,7 @@ def a2c_main():
 
     # list of tau / lambda value: a parameter γ that allows us to reduce variance by downweighting rewards
     # corresponding to delayed effects, at the cost of introducing bias
-    tau_list = [0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
+    tau_list = [0.99] #[0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
     color_list = ["black", "red", "yellow", "green", "darkblue", "orange"]
 
     # plot
