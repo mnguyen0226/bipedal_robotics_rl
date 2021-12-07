@@ -3,9 +3,9 @@
 # ECE 5984 - Reinforcement Learning
 # 11/21/2021
 
-# Inspired Reference: https://github.com/nikhilbarhate99/PPO-PyTorch
-# Inspired Reference: https://github.com/4kasha/CartPole_PPO
-# Reading: https://lilianweng.github.io/lil-log/2018/04/08/policy-gradient-algorithms.html
+# Reference: https://github.com/nikhilbarhate99/PPO-PyTorch
+# Reference: https://github.com/4kasha/CartPole_PPO
+# Explanation: https://lilianweng.github.io/lil-log/2018/04/08/policy-gradient-algorithms.html
 
 import gym
 import torch
