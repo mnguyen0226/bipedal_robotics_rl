@@ -31,7 +31,6 @@ class Policy(nn.Module):
 
         self.action_mean = nn.Linear(last_dim, action_dim)
         self.action_log_std = nn.Parameter(torch.ones(1, action_dim) * log_std)
-        # self.entropy_coef = 0.01
 
         set_init(self.affine_layers_p)
         set_init([self.action_mean])

@@ -64,11 +64,11 @@ np.random.seed(1)
 torch.manual_seed(1)
 env.seed(1)
 
-# define actor and critic network
+# define actor network, critic network
 policy_net = Policy(state_dim, env.action_space.shape[0], log_std=-1.0)
 value_net = Value(state_dim)
 
-# test trained model
+# test trained model by loading actor network, critic network, and running state
 # policy_net, value_net, running_state = pickle.load(
 #     open("assets/learned_models/a2c_algorithm/bipedal_walker_v2_a2c_cpu.p", "rb")
 # )
@@ -86,7 +86,7 @@ agent = BipedalWalkerAgent(
     policy_net,
     device,
     running_state=running_state,
-    render=False,
+    render=True,
     num_threads=1,
 )
 
