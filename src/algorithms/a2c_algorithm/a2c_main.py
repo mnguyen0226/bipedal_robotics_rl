@@ -33,7 +33,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 # initialize global variable
 # L2 regularization can deal with the multicollinearity (independent variables are highly correlated)
 # problems through constricting the coefficient and by keeping all the variables.
-L2_REG = 1e-3 # calculate error with L2 regularization
+L2_REG = 1e-3  # calculate error with L2 regularization
 GAMMA = 0.99  # discount factor
 MAX_NUM_ITER = 1000  # 5000
 RENDER = True  # True
@@ -68,11 +68,12 @@ env.seed(1)
 policy_net = Policy(state_dim, env.action_space.shape[0], log_std=-1.0)
 value_net = Value(state_dim)
 
-# Test Trained Loaded
+# test trained model
 # policy_net, value_net, running_state = pickle.load(
 #     open("assets/learned_models/a2c_algorithm/cpu_bipedal_walker_v2_a2c.p", "rb")
 # )
 
+# comment out these two line below if you decided to test the train model line above
 policy_net.to(device)
 value_net.to(device)
 
@@ -107,7 +108,7 @@ def update_a2c_params(batch, tau):
     Args:
         batch: input batch
     """
-    # collect all state, action, reward, next state by stacking batch. 
+    # collect all state, action, reward, next state by stacking batch.
     # thus this is similar to "for each step in the episode do" when run
     states = torch.from_numpy(np.stack(batch.state)).to(dtype).to(device)
     actions = torch.from_numpy(np.stack(batch.action)).to(dtype).to(device)
@@ -144,7 +145,7 @@ def a2c_main():
         f.write(localtime)
         f.write("----------\n")
 
-    # list of tau / lambda value: a parameter γ that allows us to reduce variance by downweighting rewards 
+    # list of tau / lambda value: a parameter γ that allows us to reduce variance by downweighting rewards
     # corresponding to delayed effects, at the cost of introducing bias
     tau_list = [0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
     color_list = ["black", "red", "yellow", "green", "darkblue", "orange"]
@@ -155,9 +156,6 @@ def a2c_main():
 
     for i in range(len(tau_list)):
         t0 = time.time()  # for logging training time
-
-        # plot legend
-        plot.legend(loc="upper right")
 
         # plot
         xval, yval = [], []
@@ -170,6 +168,9 @@ def a2c_main():
         (plotLine,) = subplot.plot(xval, yval, color_list[i], label=string_label)
         subplot.set_xlim([0, MAX_NUM_ITER])
         subplot.set_ylim([-300, 400])
+
+        # plot legend
+        plot.legend(loc="upper right")
 
         # run iteration/episode
         for i_iter in range(MAX_NUM_ITER):

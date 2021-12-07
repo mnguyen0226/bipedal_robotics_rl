@@ -61,10 +61,10 @@ def q_learning_main():
         (plotLine,) = subplot.plot(xval, yval, color_list[i], label=string_label)
         subplot.set_xlim([0, num_episodes])
         subplot.set_ylim([-220, -60])
-        
+
         # for each episode do
         for j in range(1, num_episodes + 1):
-            
+
             # run the q-learning, collect rewards and highest reward
             curr_episode_reward, highest_reward = q_learning(
                 env=env,

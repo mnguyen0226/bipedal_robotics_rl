@@ -5,3 +5,6 @@ Thu Dec  2 16:10:38 2021----------
 Thu Dec  2 16:10:53 2021----------
 Thu Dec  2 16:13:13 2021----------
 - The training time for 1000 episode of PPO_GAE with the lambda-return/tau-return of 0.99 is: 10377.609986305237 seconds.
+Tue Dec  7 01:06:01 2021----------
+Tue Dec  7 01:08:07 2021----------
+Tue Dec  7 01:09:00 2021----------

@@ -42,9 +42,9 @@ def a2c_step(
 
     # update Policy network
     log_probs = policy_net.get_log_prob(states, actions)  # get log probabilities
-    
+
     # calculate policy loss
-    policy_loss = -(log_probs * advantages).mean() 
+    policy_loss = -(log_probs * advantages).mean()
     optimizer_policy.zero_grad()  # initialize gradients to 0s
     policy_loss.backward()  # u pdate Actor parameters with Adam optimizer with back propagation
     torch.nn.utils.clip_grad_norm_(

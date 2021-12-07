@@ -6,7 +6,7 @@ from algorithms.utils import set_init
 class Value(nn.Module):
     def __init__(self, state_dim, hidden_size=(200, 128)):
         """Constructor of Critic network
-        A2C has a learned valuefunction that can provide a more informative feedback signal 
+        A2C has a learned valuefunction that can provide a more informative feedback signal
         to a policy than the sequence of therewards available from the environment
 
         Args:

@@ -8,9 +8,9 @@ from algorithms.utils import set_init
 class Policy(nn.Module):
     def __init__(self, state_dim, action_dim, hidden_size=(200, 128), log_std=0):
         """Constructor of Policy network
-        A2C has the policy learns that use the informationprovided the learned 
+        A2C has the policy learns that use the informationprovided the learned
         value function and generate more actions
-        
+
         Args:
             state_dim: state dimension
             action_dim: action dimension
@@ -23,12 +23,12 @@ class Policy(nn.Module):
         self.affine_layers_p = nn.ModuleList()
         self.bn_layers_p = nn.ModuleList()
         last_dim = state_dim
-        
+
         for nh in hidden_size:
             self.affine_layers_p.append(nn.Linear(last_dim, nh))
             self.bn_layers_p.append(nn.BatchNorm1d(nh, momentum=0.5))
             last_dim = nh
-            
+
         self.action_mean = nn.Linear(last_dim, action_dim)
         self.action_log_std = nn.Parameter(torch.ones(1, action_dim) * log_std)
         # self.entropy_coef = 0.01

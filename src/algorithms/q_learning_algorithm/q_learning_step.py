@@ -145,7 +145,7 @@ def q_learning(env, num_episode, q_table, highest_reward, alpha, gamma, render=F
     )  # initialize epsilon greedy that will decrease (exploit) as the num_episode increase
 
     # for each episode, run till finish
-    while True: 
+    while True:
         next_action = convert_next_action(  # choose next action
             get_next_action(q_table=q_table, epsilon=epsilon, state=state)
         )

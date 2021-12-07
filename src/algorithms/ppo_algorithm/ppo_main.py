@@ -69,9 +69,10 @@ env.seed(1)
 policy_net = Policy(state_dim, env.action_space.shape[0], log_std=-1.0)
 value_net = Value(state_dim)
 
-# Test Trained Loaded
+# test trained model
 # policy_net, value_net, running_state = pickle.load(open("assets/learned_models/ppo_algorithm/Bipedal_walker_v2_ppo.p", "rb"))
 
+# comment out these two line below if you decided to test the train model line above
 policy_net.to(device)
 value_net.to(device)
 
@@ -185,9 +186,6 @@ def ppo_main():
     for i in range(len(tau_list)):
         t0 = time.time()  # for logging training time
 
-        # plot legend
-        plot.legend(loc="upper right")
-
         # plot
         xval, yval = [], []
         plt.xlabel("Number Episodes")
@@ -199,6 +197,9 @@ def ppo_main():
         (plotLine,) = subplot.plot(xval, yval, color_list[i], label=string_label)
         subplot.set_xlim([0, MAX_NUM_ITER])
         subplot.set_ylim([-300, 400])
+
+        # plot legend
+        plot.legend(loc="upper right")
 
         # run iteration
         for i_iter in range(MAX_NUM_ITER):
