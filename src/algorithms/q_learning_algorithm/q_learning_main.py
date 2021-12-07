@@ -14,7 +14,7 @@ from algorithms.q_learning_algorithm import q_learning
 
 
 def q_learning_main():
-    """User Interface"""
+    """Q-LEARNING ALGORITHM"""
     # log training date
     localtime = time.asctime(time.localtime(time.time()))
     with open("assets/training_times/q_learning_algorithm/training_time.txt", "a") as f:
