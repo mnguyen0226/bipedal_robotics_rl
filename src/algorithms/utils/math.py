@@ -3,6 +3,7 @@ import torch.nn as nn
 
 # Reference: https://medium.com/@mansiarora_20448/probability-distributions-in-machine-learning-98811eb1e8ea
 
+
 def normal_log_density(x, mean, log_std, std):
     """Returns normalized log density, aka normal distribution, aka Gaussian distribution
 

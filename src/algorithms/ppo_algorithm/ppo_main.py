@@ -23,7 +23,7 @@ from algorithms.utils.additional_torch import to_device
 from algorithms.ppo_algorithm import Policy
 from algorithms.ppo_algorithm import Value
 from algorithms.ppo_algorithm import ppo_step
-from algorithms.a2c_algorithm import estimate_advantages
+from algorithms.a2c_algorithm import generalized_advantage_estimation
 from algorithms.a2c_algorithm import BipedalWalkerAgent
 from algorithms.utils import AlgorithmRunManagement
 import numpy as np
@@ -117,8 +117,8 @@ def update_ppo_params(batch, tau):
     (
         advantages,
         returns,
-    ) = estimate_advantages(  # get estimated advantage from stepping trajectories
-        rewards = rewards, masks = masks, values = values, gamma = GAMMA, tau = tau, device = device
+    ) = generalized_advantage_estimation(  # get estimated advantage from stepping trajectories
+        rewards=rewards, masks=masks, values=values, gamma=GAMMA, tau=tau, device=device
     )
 
     # mini batch PPO update
@@ -150,40 +150,40 @@ def update_ppo_params(batch, tau):
             )
 
             ppo_step(  # run PPO algorithm updates
-                policy_net = policy_net,
-                value_net = value_net,
-                optimizer_policy = optimizer_policy,
-                optimizer_value = optimizer_value,
-                optim_value_iter_num = 1,
-                states = states_b,
-                actions = actions_b,
-                returns = returns_b,
-                advantages = advantages_b,
-                fixed_log_probs = fixed_log_probs_b,
-                clip_epsilon = CLIP_EPSILON,
-                l2_reg = L2_REG,
+                policy_net=policy_net,
+                value_net=value_net,
+                optimizer_policy=optimizer_policy,
+                optimizer_value=optimizer_value,
+                optim_value_iter_num=1,
+                states=states_b,
+                actions=actions_b,
+                returns=returns_b,
+                advantages=advantages_b,
+                fixed_log_probs=fixed_log_probs_b,
+                clip_epsilon=CLIP_EPSILON,
+                l2_reg=L2_REG,
             )
 
 
 def ppo_main():
     """User Interface"""
     # log training date
-    localtime = time.asctime( time.localtime(time.time()) )
-    with open('assets/training_times/ppo_algorithm/training_time.txt', 'a') as f: 
+    localtime = time.asctime(time.localtime(time.time()))
+    with open("assets/training_times/ppo_algorithm/training_time.txt", "a") as f:
         f.write(localtime)
-        f.write('----------\n')
-    
-    # list of tau / lambda value 
+        f.write("----------\n")
+
+    # list of tau / lambda value
     # tau_list = [0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
     tau_list = [0.99]
-    color_list = ['black', 'red', 'yellow', 'green', 'darkblue', 'orange']
-    
+    color_list = ["black", "red", "yellow", "green", "darkblue", "orange"]
+
     # plot
     plot = plt.figure()
     subplot = plot.add_subplot()
 
     for i in range(len(tau_list)):
-        t0 = time.time() # for logging training time
+        t0 = time.time()  # for logging training time
 
         # plot legend
         plot.legend(loc="upper right")
@@ -192,7 +192,9 @@ def ppo_main():
         xval, yval = [], []
         plt.xlabel("Number Episodes")
         plt.ylabel("Rewards")
-        plt.title("Bipedal Walker v2 with PPO_GAE\ngamma=0.90, num_episodes=1000, clip_epsilon=0.2\nL2_reg=1e-3, min_batch_size=2048, optim_batch_size=64")
+        plt.title(
+            "Bipedal Walker v2 with PPO_GAE\ngamma=0.90, num_episodes=1000, clip_epsilon=0.2\nL2_reg=1e-3, min_batch_size=2048, optim_batch_size=64"
+        )
         string_label = "λ/tau = " + str(tau_list[i])
         (plotLine,) = subplot.plot(xval, yval, color_list[i], label=string_label)
         subplot.set_xlim([0, MAX_NUM_ITER])
@@ -207,12 +209,24 @@ def ppo_main():
             update_ppo_params(batch, tau_list[i])
 
             if i_iter % LOG_INTERVAL == 0:
-                print(f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}')
+                print(
+                    f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}'
+                )
 
             # if agent was able to get the highest rewards of 300, then log the episode number
-            if(log["max_reward"] >= 300.0):
-                with open('assets/log_episodes_300_rewards/ppo_algorithm/log_300.txt', 'a') as f: 
-                    f.write('Episode ' + str(i_iter+1) + ' of lambda/tau ' + str(tau_list[i]) +' has the reward of ' + str(log["max_reward"]) + '.\n')
+            if log["max_reward"] >= 300.0:
+                with open(
+                    "assets/log_episodes_300_rewards/ppo_algorithm/log_300.txt", "a"
+                ) as f:
+                    f.write(
+                        "Episode "
+                        + str(i_iter + 1)
+                        + " of lambda/tau "
+                        + str(tau_list[i])
+                        + " has the reward of "
+                        + str(log["max_reward"])
+                        + ".\n"
+                    )
                     f.close()
 
             # plot
@@ -239,15 +253,17 @@ def ppo_main():
 
             # clean up gpu memory after every iteration
             torch.cuda.empty_cache()
-        
+
         t1 = time.time()
         print(f"All episodes finished. Training time of PPO is: {t1-t0}")
 
         # write training time to file
-        with open('assets/training_times/ppo_algorithm/training_time.txt', 'a') as f: 
-            f.write('- The training time for 1000 episode of PPO_GAE with the lambda-return/tau-return of ')
+        with open("assets/training_times/ppo_algorithm/training_time.txt", "a") as f:
+            f.write(
+                "- The training time for 1000 episode of PPO_GAE with the lambda-return/tau-return of "
+            )
             f.write(str(tau_list[i]))
-            f.write(' is: ')
-            f.write(str(t1-t0))
-            f.write(' seconds.\n')
+            f.write(" is: ")
+            f.write(str(t1 - t0))
+            f.write(" seconds.\n")
             f.close()

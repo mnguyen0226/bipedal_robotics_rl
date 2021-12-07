@@ -11,10 +11,10 @@ from algorithms.q_learning_algorithm.q_learning_main import q_learning_main
 def main():
     # train q leanring
     # q_learning_main()
-    
+
     # train a2c gae
     # a2c_main()
-    
+
     # train ppo gae
     ppo_main()
 

@@ -1,3 +1,5 @@
+# Reference: https://github.com/grantsrb/Pytorch-A2C
+
 import torch
 
 
@@ -12,7 +14,7 @@ def a2c_step(
     advantages,
     l2_reg,
 ):
-    """Updates Critic network and Policy network with first order optimization
+    """Updates Critic network and Policy network parameter with first order optimization
 
     Args:
         policy_net: Policy network

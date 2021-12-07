@@ -6,6 +6,10 @@ from algorithms.utils import to_device
 import numpy as np
 from algorithms.utils import Memory
 
+# Reference: https://github.com/pythonlessons/Reinforcement_Learning/blob/master/BipedalWalker-v3_PPO/BipedalWalker-v3_PPO.py
+# Reference: https://slm-lab.gitbook.io/slm-lab/development/algorithms/a2c
+# Reference: https://github.com/kengz/SLM-Lab
+
 
 class BipedalWalkerAgent:
     def __init__(
@@ -57,7 +61,9 @@ class BipedalWalkerAgent:
         thread_batch_size = int(
             math.floor(min_batch_size / self.num_threads)
         )  # number of threads for batch size
-        queue = multiprocessing.Queue()  # set parallel multi processing
+        queue = (
+            multiprocessing.Queue()
+        )  # set parallel multi processing if able to run multicore
         workers = []  # number of worker
 
         for i in range(self.num_threads - 1):

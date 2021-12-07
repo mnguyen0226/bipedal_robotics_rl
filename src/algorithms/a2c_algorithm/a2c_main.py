@@ -23,7 +23,7 @@ from algorithms.utils.additional_torch import to_device
 from algorithms.a2c_algorithm import Policy
 from algorithms.a2c_algorithm import Value
 from algorithms.a2c_algorithm import a2c_step
-from algorithms.a2c_algorithm import estimate_advantages
+from algorithms.a2c_algorithm import generalized_advantage_estimation
 from algorithms.a2c_algorithm import BipedalWalkerAgent
 from algorithms.utils import AlgorithmRunManagement
 import numpy as np
@@ -32,11 +32,11 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # initialize global variable
 L2_REG = 1e-3
-GAMMA = 0.99 # discount factor
+GAMMA = 0.99  # discount factor
 MAX_NUM_ITER = 1000  # 50000
-RENDER = True # True
+RENDER = True  # True
 MIN_BATCH_SIZE = 2048
-LOG_INTERVAL = 1 # print out rate
+LOG_INTERVAL = 1  # print out rate
 SAVE_MODEL_INTERVAL = 100
 ENV_NAME = "BipedalWalker-v2"
 
@@ -67,7 +67,9 @@ env.seed(1)
 # value_net = Value(state_dim)
 
 # Test Trained Loaded
-policy_net, value_net, running_state = pickle.load(open("assets/learned_models/a2c_algorithm/cpu_bipedal_walker_v2_a2c.p", "rb"))
+policy_net, value_net, running_state = pickle.load(
+    open("assets/learned_models/a2c_algorithm/cpu_bipedal_walker_v2_a2c.p", "rb")
+)
 
 policy_net.to(device)
 value_net.to(device)
@@ -113,51 +115,53 @@ def update_a2c_params(batch, tau):
     (
         advantages,
         returns,
-    ) = estimate_advantages(  # get estimated advantage from stepping trajectories
-        rewards = rewards, masks = masks, values = values, gamma = GAMMA, tau = tau, device = device
+    ) = generalized_advantage_estimation(  # get estimated advantage from stepping trajectories
+        rewards=rewards, masks=masks, values=values, gamma=GAMMA, tau=tau, device=device
     )
 
     a2c_step(  # run A2C algorithm updates
-        policy_net = policy_net,
-        value_net = value_net,
-        optimizer_policy = optimizer_policy,
-        optimizer_value = optimizer_value,
-        states = states,
-        actions = actions,
-        returns = returns,
-        advantages = advantages,
-        l2_reg = L2_REG,
+        policy_net=policy_net,
+        value_net=value_net,
+        optimizer_policy=optimizer_policy,
+        optimizer_value=optimizer_value,
+        states=states,
+        actions=actions,
+        returns=returns,
+        advantages=advantages,
+        l2_reg=L2_REG,
     )
 
 
 def a2c_main():
     """User Interface"""
     # log training date
-    localtime = time.asctime( time.localtime(time.time()) )
-    with open('assets/training_times/a2c_algorithm/training_time.txt', 'a') as f: 
+    localtime = time.asctime(time.localtime(time.time()))
+    with open("assets/training_times/a2c_algorithm/training_time.txt", "a") as f:
         f.write(localtime)
-        f.write('----------\n')
-    
-    # list of tau / lambda value 
+        f.write("----------\n")
+
+    # list of tau / lambda value
     # tau_list = [0.50, 0.70, 0.90, 0.95, 0.97, 0.99]
     tau_list = [0.99]
-    color_list = ['black', 'red', 'yellow', 'green', 'darkblue', 'orange']
+    color_list = ["black", "red", "yellow", "green", "darkblue", "orange"]
 
     # plot
     plot = plt.figure()
     subplot = plot.add_subplot()
 
     for i in range(len(tau_list)):
-        t0 = time.time() # for logging training time
-        
+        t0 = time.time()  # for logging training time
+
         # plot legend
         plot.legend(loc="upper right")
-        
-        # plot 
+
+        # plot
         xval, yval = [], []
         plt.xlabel("Number Episodes")
         plt.ylabel("Rewards")
-        plt.title("Bipedal Walker v2 with A2C_GAE\ngamma=0.99, num_episodes=5000,\nL2_reg=1e-3, min_batch_size=2048")
+        plt.title(
+            "Bipedal Walker v2 with A2C_GAE\ngamma=0.99, num_episodes=5000,\nL2_reg=1e-3, min_batch_size=2048"
+        )
         string_label = "λ/tau = " + str(tau_list[i])
         (plotLine,) = subplot.plot(xval, yval, color_list[i], label=string_label)
         subplot.set_xlim([0, MAX_NUM_ITER])
@@ -169,15 +173,27 @@ def a2c_main():
             batch, log = agent.collect_samples(MIN_BATCH_SIZE, RENDER)
 
             # update the parameter for each time step - second for loop
-            update_a2c_params(batch, tau_list[i]) 
+            update_a2c_params(batch, tau_list[i])
 
             if i_iter % LOG_INTERVAL == 0:
-                print(f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}')
+                print(
+                    f'Episode {i_iter+1} finished. Highest reward: {log["max_reward"]}'
+                )
 
             # if agent was able to get the highest rewards of 300, then log the episode number
-            if(log["max_reward"] >= 300.0):
-                with open('assets/log_episodes_300_rewards/a2c_algorithm/log_300.txt', 'a') as f: 
-                    f.write('Episode ' + str(i_iter+1) + ' of lambda/tau ' + str(tau_list[i]) +' has the reward of ' + str(log["max_reward"]) + '.\n')
+            if log["max_reward"] >= 300.0:
+                with open(
+                    "assets/log_episodes_300_rewards/a2c_algorithm/log_300.txt", "a"
+                ) as f:
+                    f.write(
+                        "Episode "
+                        + str(i_iter + 1)
+                        + " of lambda/tau "
+                        + str(tau_list[i])
+                        + " has the reward of "
+                        + str(log["max_reward"])
+                        + ".\n"
+                    )
                     f.close()
 
             # append plot
@@ -205,17 +221,17 @@ def a2c_main():
 
             # clean up gpu memory after every iteration
             torch.cuda.empty_cache()
-        
 
         t1 = time.time()
         print(f"All episodes finished. Training time of A2C is: {t1-t0}")
-        
-        # write training time to file
-        with open('assets/training_times/a2c_algorithm/training_time.txt', 'a') as f: 
-            f.write('- The training time for 1000 episode of A2C_GAE with the lambda-return/tau-return of ')
-            f.write(str(tau_list[i]))
-            f.write(' is: ')
-            f.write(str(t1-t0))
-            f.write(' seconds.\n')
-            f.close()
 
+        # write training time to file
+        with open("assets/training_times/a2c_algorithm/training_time.txt", "a") as f:
+            f.write(
+                "- The training time for 1000 episode of A2C_GAE with the lambda-return/tau-return of "
+            )
+            f.write(str(tau_list[i]))
+            f.write(" is: ")
+            f.write(str(t1 - t0))
+            f.write(" seconds.\n")
+            f.close()

@@ -4,6 +4,7 @@ import numpy as np
 # Reference: ref: https://github.com/Jiankai-Sun/Proximal-Policy-Optimization-in-Pytorch/blob/master/ppo.py
 # Reference: ref: https://github.com/zhangchuheng123/Reinforcement-Implementation/blob/master/code/ppo.py
 
+
 class AlgorithmRunManagement:
     """
     y = (x-mean)/std
@@ -19,14 +20,14 @@ class AlgorithmRunManagement:
             destd: Defaults to True.
             clip: Defaults to 10.0.
         """
-        self.demean = demean # for mean deduction
+        self.demean = demean  # for mean deduction
         self.destd = destd
         self.clip = clip
 
         self.rs = RunningStat(shape)
 
     def __call__(self, x, update=True):
-        """The __call__ method enables Python programmers to write classes where the instances behave 
+        """The __call__ method enables Python programmers to write classes where the instances behave
         like functions and can be called like a function.
 
         Args:
@@ -37,13 +38,15 @@ class AlgorithmRunManagement:
             updated data
         """
         if update:
-            self.rs.push(x) # push new value to running state
+            self.rs.push(x)  # push new value to running state
         if self.demean:
-            x = x - self.rs.mean 
+            x = x - self.rs.mean
         if self.destd:
             x = x / (self.rs.std + 1e-8)
         if self.clip:
-            x = np.clip(x, -self.clip, self.clip) # glip gradient to avoid overfit or underfit performance
+            x = np.clip(
+                x, -self.clip, self.clip
+            )  # glip gradient to avoid overfit or underfit performance
         return x
 
 

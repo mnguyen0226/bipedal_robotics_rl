@@ -30,6 +30,7 @@ def update_q_table(q_table, state, action, reward, alpha, gamma, next_state=None
 
     return new_q_val
 
+
 def discretize_state(state):
     """Discretizes continuous state space to discrete state space with 14 physical values
 
@@ -43,33 +44,38 @@ def discretize_state(state):
     # discretize observation space
     # https://github.com/openai/gym/wiki/BipedalWalker-v2
     obs_state_bounds = [
-        (0, math.pi),   # hull_angle	
-        (-2, 2),        # hull_angular_velocity	
-        (-1, 1),        # vel_x	
-        (-1, 1),        # vel_y
-        (0, math.pi),   # hip_joint_1_angle	
-        (-2, 2),        # hip_joint_1_speed	
-        (0, math.pi),   # knee_joint_1_angle	
-        (-2, 2),        # knee_joint_1_speed	
-        (0, 1),         # leg_1_ground_contact_flag
-        (0, math.pi),   # hip_joint_2_angle
-        (-2, 2),        # hip_joint_2_speed	
-        (0, math.pi),   # knee_joint_2_angle	
-        (-2, 2),        # knee_joint_2_speed	
-        (0, 1),         # leg_2_ground_contact_flag	
+        (0, math.pi),  # hull_angle
+        (-2, 2),  # hull_angular_velocity
+        (-1, 1),  # vel_x
+        (-1, 1),  # vel_y
+        (0, math.pi),  # hip_joint_1_angle
+        (-2, 2),  # hip_joint_1_speed
+        (0, math.pi),  # knee_joint_1_angle
+        (-2, 2),  # knee_joint_1_speed
+        (0, 1),  # leg_1_ground_contact_flag
+        (0, math.pi),  # hip_joint_2_angle
+        (-2, 2),  # hip_joint_2_speed
+        (0, math.pi),  # knee_joint_2_angle
+        (-2, 2),  # knee_joint_2_speed
+        (0, 1),  # leg_2_ground_contact_flag
     ]
 
     # create an empty obs_discrete_state array to store converted discrete state array
     obs_discrete_state = []
-    
+
     for i in range(len(state)):
         converted_i = int(
-            (state[i] - obs_state_bounds[i][0]) / (obs_state_bounds[i][1] - obs_state_bounds[i][0]) * 19 # 19 is arbitrary integer
+            (state[i] - obs_state_bounds[i][0])
+            / (obs_state_bounds[i][1] - obs_state_bounds[i][0])
+            * 19  # 19 is arbitrary integer
         )
         obs_discrete_state.append(converted_i)
 
-    ds = tuple(obs_discrete_state) # convert collected discrete state array into tuple to maintain same shape
+    ds = tuple(
+        obs_discrete_state
+    )  # convert collected discrete state array into tuple to maintain same shape
     return ds
+
 
 # Epsilon Greedy Action: https://deeplizard.com/learn/video/mo96Nqlo1L8
 def get_next_action(q_table, epsilon, state):
@@ -92,6 +98,7 @@ def get_next_action(q_table, epsilon, state):
 
     return action
 
+
 def convert_next_action(next_action):
     """Converts get next action to next action
 
@@ -106,7 +113,7 @@ def convert_next_action(next_action):
         next_val = ((next_action[i] / 9) * 2) - 1
         action.append(next_val)
 
-    ta = tuple(action) # convert action array into tuple to maintain same shape
+    ta = tuple(action)  # convert action array into tuple to maintain same shape
     return ta
 
 
@@ -129,11 +136,15 @@ def q_learning(env, num_episode, q_table, highest_reward, alpha, gamma, render=F
         env.render()
 
     # initialize state, reward, epsilon greedy rate
-    state = discretize_state(env.reset()[0:14]) # get 14 values without the lidar measurement
-    total_reward = 0 # initialize total reward
-    epsilon = 1.0 / num_episode * 0.004 # initialize epsilon greedy that will decrease (exploit) as the num_episode increase
+    state = discretize_state(
+        env.reset()[0:14]
+    )  # get 14 values without the lidar measurement
+    total_reward = 0  # initialize total reward
+    epsilon = (
+        1.0 / num_episode * 0.004
+    )  # initialize epsilon greedy that will decrease (exploit) as the num_episode increase
 
-    while(True):
+    while True:
         next_action = convert_next_action(  # choose next action
             get_next_action(q_table=q_table, epsilon=epsilon, state=state)
         )
