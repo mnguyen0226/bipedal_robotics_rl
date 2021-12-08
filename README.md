@@ -3,6 +3,21 @@
 In recent years, reinforcement learning (RL) algorithms have been implemented in several robotics and control systems applications. Several RL techniques are used to achieve basic autonomous controls, path-findings, vision tracker, and intelligent decision. Stabilizing bipedal walking robot is one of the challenging problems. In this paper, I will experiment and evaluate the three reinforcement learning algorithms to solve the simulated bipedal walking problem. Without any prior knowledge of its surrounding environment, the agent is able to demonstrate successful walking ability through trial and error via Advantage Actor-Critic (A2C) and Proximal Policy Optimization (PPO). The results show that A2C and PPO with different bias estimation rates are capable of solving the bipedal walking problem.
 
 ## Reproducibility
+- Fork the project and enter the directory: `$cd soo_non_convex_ml`
+- `$cd rl_value_based_vs_value_policy_based`
+- To run experiments on all three algorithms Q-Learning, A2C, PPO: `python src/main.py`
+- To specify algorithms in `src/main.py`:
+```
+# train q leanring
+q_learning_main()
+
+# train a2c gae
+# a2c_main()
+
+# train ppo gae
+# ppo_main()
+
+```
 
 ## Recorded Agent
 - [Link](https://drive.google.com/drive/folders/1adlMlMAl7jwFxOLdTJnXYQfEmJs8Pv8E?usp=sharing)
@@ -41,9 +56,5 @@ In recent years, reinforcement learning (RL) algorithms have been implemented in
 org/abs/1707.06347.
 - [18] R.S Sutton and A.G Barto. Reinforcement Learning: An Introduction. 2018.
 
-
-(aia) 
-nguye@DESKTOP-OBHI23I MINGW64 ~/OneDrive/Desktop/Senior/ECE 5984 Reinforcement Learning/rl_value_based_vs_value_policy_based (main)
-$ python src/main.py 
 
 
