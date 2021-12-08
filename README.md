@@ -1,5 +1,6 @@
 # Performance Comparison and Analysis Between Q-Learning, A2C with Generalized Advantage Estimation, and PPO with Generalized Advantage Estimation in BipedalWalker-v2 - ECE 5984
 
+## About
 In recent years, reinforcement learning (RL) algorithms have been implemented in several robotics and control systems applications. Several RL techniques are used to achieve basic autonomous controls, path-findings, vision tracker, and intelligent decision. Stabilizing bipedal walking robot is one of the challenging problems. In this paper, I will experiment and evaluate the three reinforcement learning algorithms to solve the simulated bipedal walking problem. Without any prior knowledge of its surrounding environment, the agent is able to demonstrate successful walking ability through trial and error via Advantage Actor-Critic (A2C) and Proximal Policy Optimization (PPO). The results show that A2C and PPO with different bias estimation rates are capable of solving the bipedal walking problem.
 
 ![alt text](https://github.com/mnguyen0226/rl_value_based_vs_value_policy_based/blob/main/docs/image/bipedal_wallpaper.png)
