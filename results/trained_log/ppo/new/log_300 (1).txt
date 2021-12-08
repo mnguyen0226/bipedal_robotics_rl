@@ -1,5 +1,0 @@
-Episode 196 of lambda/tau 0.9 has the reward of 300.212343063633.
-Episode 675 of lambda/tau 0.5 has the reward of 301.29011292455556.
-Episode 941 of lambda/tau 0.5 has the reward of 300.37930178514233.
-Episode 944 of lambda/tau 0.5 has the reward of 300.2873731078307.
-Episode 48 of lambda/tau 0.7 has the reward of 300.5448920593167.

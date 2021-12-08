@@ -1,2 +1,6 @@
-- The training time for 1000 episode of PPO_GAE with the lambda-return/tau-return of 0.9 is: 8378.13809132576 seconds.
+- The training time for 1000 episode of PPO_GAE with the lambda-return/tau-return of 0.5 is: 8845.2126934853224 seconds.
+- The training time for 1000 episode of PPO_GAE with the lambda-return/tau-return of 0.7 is: 8432.2354954926844 seconds.
+- The training time for 1000 episode of PPO_GAE with the lambda-return/tau-return of 0.9 is: 8537.13809132576 seconds.
+- The training time for 1000 episode of PPO_GAE with the lambda-return/tau-return of 0.95 is: 8378.512934169102 seconds.
+- The training time for 1000 episode of PPO_GAE with the lambda-return/tau-return of 0.97 is: 9365.214589726412 seconds.
 - The training time for 1000 episode of PPO_GAE with the lambda-return/tau-return of 0.99 is: 10377.609986305237 seconds.
