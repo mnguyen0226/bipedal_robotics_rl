@@ -9,7 +9,7 @@ In recent years, reinforcement learning (RL) algorithms have been implemented in
 - `$cd rl_value_based_vs_value_policy_based`
 - To run experiments on all three algorithms Q-Learning, A2C, PPO: `python src/main.py`
 - To specify algorithms in `src/main.py`:
-```
+```python
 # train q leanring
 q_learning_main()
 
