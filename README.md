@@ -16,10 +16,9 @@ q_learning_main()
 
 # train ppo gae
 # ppo_main()
-
 ```
 
-## Recorded Agent
+## Recorded Agents
 - [Link](https://drive.google.com/drive/folders/1adlMlMAl7jwFxOLdTJnXYQfEmJs8Pv8E?usp=sharing)
 
 ## Q Learning Performance
