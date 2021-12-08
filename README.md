@@ -23,7 +23,7 @@ q_learning_main()
 ## Recorded Agents
 - [Link](https://drive.google.com/drive/folders/1adlMlMAl7jwFxOLdTJnXYQfEmJs8Pv8E?usp=sharing)
 
-## Q Learning Performance
+## Q-Learning Performance
 ![alt text](https://github.com/mnguyen0226/rl_value_based_vs_value_policy_based/blob/main/results/gpu_trained/q_learning_max_reward_gpu.png)
 
 ## A2C with GAE Performance
