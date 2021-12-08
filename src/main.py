@@ -8,15 +8,15 @@ from algorithms.ppo_algorithm.ppo_main import ppo_main
 from algorithms.q_learning_algorithm.q_learning_main import q_learning_main
 
 
-def main():
+def main(): 
     # train q leanring
-    # q_learning_main()
+    q_learning_main()
 
     # train a2c gae
     a2c_main()
 
     # train ppo gae
-    # ppo_main()
+    ppo_main()
 
 
 if __name__ == "__main__":
